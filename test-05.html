@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test sobre La Unión Europea</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .pregunta {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .pregunta p {
+            font-weight: bold;
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .correcta {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .incorrecta {
+            color: #e74c3c;
+            text-decoration: line-through;
+        }
+        .respuesta-correcta {
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 5px;
+            display: none;
+        }
+        #resultado {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-left: 6px solid #3498db;
+            border-radius: 5px;
+            display: none;
+        }
+        #contador {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .explicacion {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 5px;
+            display: none;
+        }
+        #indice {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        .numero-pregunta {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ecf0f1;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .numero-pregunta:hover {
+            background-color: #bdc3c7;
+        }
+        .numero-pregunta.respondida {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .numero-pregunta.respondida-incorrecta {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .controles-navegacion {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        #anterior-btn {
+            background-color: #95a5a6;
+        }
+        #anterior-btn:hover {
+            background-color: #7f8c8d;
+        }
+        #finalizar-btn {
+            background-color: #e67e22;
+            display: none;
+        }
+        #finalizar-btn:hover {
+            background-color: #d35400;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test sobre La Unión Europea</h1>
+
+    
+    <form id="testForm">
+        <!-- Las preguntas se insertarán aquí dinámicamente -->
+    </form>
+    
+    <div class="controles-navegacion">
+        <button type="button" id="anterior-btn" onclick="anteriorPregunta()">Anterior</button>
+        <button type="button" id="siguiente-btn" onclick="siguientePregunta()">Siguiente</button>
+        <button type="button" id="finalizar-btn" onclick="finalizarTest()">Ver resultados finales</button>
+    </div>
+        <div id="contador">Pregunta <span id="pregunta-actual">1</span> de <span id="total-preguntas">30</span></div>
+    
+    <div id="indice">
+        <!-- Los números de pregunta se generarán aquí -->
+    </div>
+    <div id="resultado"></div>
+    
+    <script>
+               // Datos del test sobre Organización Territorial del Estado
+        const preguntas = [
+    {
+        "pregunta": "1. ¿Cuál fue el principal objetivo de la creación de la Unión Europea?",
+        "opciones": [
+            "a) Promover la paz y el bienestar de sus pueblos",
+            "b) Establecer una moneda única",
+            "c) Crear un ejército europeo",
+            "d) Eliminar todas las fronteras físicas"
+        ],
+        "correcta": 0,
+        "explicacion": "El fin de la UE es promover la paz, sus valores y el bienestar de sus pueblos, según se menciona en el documento."
+    },
+    {
+        "pregunta": "2. ¿Qué tratado creó la Comunidad Europea del Carbón y del Acero?",
+        "opciones": [
+            "a) Tratado de Roma",
+            "b) Tratado de París",
+            "c) Tratado de Maastricht",
+            "d) Tratado de Lisboa"
+        ],
+        "correcta": 1,
+        "explicacion": "El Tratado de París (1951) creó la Comunidad Europea del Carbón y del Acero."
+    },
+    {
+        "pregunta": "3. ¿Qué tratado estableció la unión económica y monetaria?",
+        "opciones": [
+            "a) Tratado de Ámsterdam",
+            "b) Tratado de Niza",
+            "c) Tratado de Maastricht",
+            "d) Tratado de Lisboa"
+        ],
+        "correcta": 2,
+        "explicacion": "El Tratado de Maastricht (1992) creó la UE y estableció la unión económica y monetaria."
+    },
+    {
+        "pregunta": "4. ¿Cuál de las siguientes NO es una competencia exclusiva de la UE?",
+        "opciones": [
+            "a) Unión aduanera",
+            "b) Política monetaria para los estados del euro",
+            "c) Educación",
+            "d) Política comercial común"
+        ],
+        "correcta": 2,
+        "explicacion": "La educación es una competencia donde la UE apoya, coordina o complementa la acción de los Estados miembros, no una competencia exclusiva."
+    },
+    {
+        "pregunta": "5. ¿Qué principio establece que la UE solo debe actuar cuando los objetivos no puedan ser alcanzados suficientemente por los Estados miembros?",
+        "opciones": [
+            "a) Principio de proporcionalidad",
+            "b) Principio de subsidiariedad",
+            "c) Principio de atribución",
+            "d) Principio de solidaridad"
+        ],
+        "correcta": 1,
+        "explicacion": "El principio de subsidiariedad establece que la UE intervendrá sólo cuando los objetivos no puedan ser alcanzados suficientemente por los Estados miembros."
+    },
+    {
+        "pregunta": "6. ¿Cuál de estas instituciones NO participa directamente en el proceso legislativo de la UE?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Consejo de la UE",
+            "d) Comisión Europea"
+        ],
+        "correcta": 1,
+        "explicacion": "El Consejo Europeo no ejerce función legislativa, solo fija las orientaciones políticas generales."
+    },
+    {
+        "pregunta": "7. ¿Cómo se eligen los diputados del Parlamento Europeo?",
+        "opciones": [
+            "a) Por designación de los gobiernos nacionales",
+            "b) Por sufragio universal directo",
+            "c) Por elección indirecta de los parlamentos nacionales",
+            "d) Por sorteo entre ciudadanos europeos"
+        ],
+        "correcta": 1,
+        "explicacion": "Los diputados al Parlamento Europeo son elegidos por sufragio universal directo, libre y secreto."
+    },
+    {
+        "pregunta": "8. ¿Cuál es el número máximo de diputados en el Parlamento Europeo?",
+        "opciones": [
+            "a) 500",
+            "b) 650",
+            "c) 720",
+            "d) 800"
+        ],
+        "correcta": 2,
+        "explicacion": "El número de diputados no excede de 720, incluido el Presidente."
+    },
+    {
+        "pregunta": "9. ¿Qué institución de la UE fija la dirección política general?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Comisión Europea",
+            "d) Tribunal de Justicia"
+        ],
+        "correcta": 1,
+        "explicacion": "El Consejo Europeo da a la Unión los impulsos necesarios para su desarrollo y define sus orientaciones políticas generales."
+    },
+    {
+        "pregunta": "10. ¿Quiénes componen el Consejo Europeo?",
+        "opciones": [
+            "a) Los ministros de Asuntos Exteriores",
+            "b) Los jefes de Estado o de Gobierno",
+            "c) Los presidentes de los parlamentos nacionales",
+            "d) Los comisarios europeos"
+        ],
+        "correcta": 1,
+        "explicacion": "El Consejo Europeo está compuesto por los Jefes de Estado o de Gobierno de los Estados miembros, su Presidente y el Presidente de la Comisión."
+    },
+    {
+        "pregunta": "11. ¿Qué institución representa a los gobiernos de los estados miembros?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Consejo de la UE",
+            "d) Comisión Europea"
+        ],
+        "correcta": 2,
+        "explicacion": "El Consejo de la UE (o Consejo de Ministros) representa a los Gobiernos de los estados miembros."
+    },
+    {
+        "pregunta": "12. ¿Qué formación del Consejo de la UE vela por la coherencia de los trabajos?",
+        "opciones": [
+            "a) Consejo de Asuntos Generales",
+            "b) Consejo de Asuntos Exteriores",
+            "c) Consejo de Justicia",
+            "d) Consejo Económico"
+        ],
+        "correcta": 0,
+        "explicacion": "El Consejo de Asuntos Generales vela por la coherencia de los trabajos de las diferentes formaciones del Consejo."
+    },
+    {
+        "pregunta": "13. ¿Cuál es la función principal de la Comisión Europea?",
+        "opciones": [
+            "a) Representar los intereses nacionales",
+            "b) Promover el interés general de la Unión",
+            "c) Dirigir la política exterior",
+            "d) Controlar las políticas monetarias"
+        ],
+        "correcta": 1,
+        "explicacion": "La Comisión Europea promueve el interés general de la Unión y toma las iniciativas adecuadas con este fin."
+    },
+    {
+        "pregunta": "14. ¿Cómo se elige al Presidente de la Comisión Europea?",
+        "opciones": [
+            "a) Por elección directa de los ciudadanos",
+            "b) Por el Parlamento Europeo",
+            "c) Por el Consejo Europeo por unanimidad",
+            "d) Por sorteo entre los comisarios"
+        ],
+        "correcta": 1,
+        "explicacion": "El Parlamento Europeo elige al Presidente de la Comisión."
+    },
+    {
+        "pregunta": "15. ¿Qué institución interpreta la legislación de la UE?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Tribunal de Justicia",
+            "d) Tribunal de Cuentas"
+        ],
+        "correcta": 2,
+        "explicacion": "El Tribunal de Justicia de la Unión Europea interpreta la legislación de la UE."
+    },
+    {
+        "pregunta": "16. ¿Cuántos jueces tiene el Tribunal de Justicia de la UE?",
+        "opciones": [
+            "a) Uno por cada estado miembro",
+            "b) 15 jueces fijos",
+            "c) 50 jueces independientemente del número de estados",
+            "d) Un número variable según los casos"
+        ],
+        "correcta": 0,
+        "explicacion": "El Tribunal de Justicia está compuesto por un juez por Estado miembro."
+    },
+    {
+        "pregunta": "17. ¿Qué institución dirige la política monetaria de la zona euro?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Banco Central Europeo",
+            "c) Comisión Europea",
+            "d) Consejo Económico y Social"
+        ],
+        "correcta": 1,
+        "explicacion": "El Banco Central Europeo dirige la política monetaria de la zona euro."
+    },
+    {
+        "pregunta": "18. ¿Qué institución examina las cuentas de la UE?",
+        "opciones": [
+            "a) Tribunal de Justicia",
+            "b) Tribunal de Cuentas",
+            "c) Comisión Europea",
+            "d) Consejo de la UE"
+        ],
+        "correcta": 1,
+        "explicacion": "El Tribunal de Cuentas examina las cuentas de la totalidad de los ingresos y gastos de la Unión."
+    },
+    {
+        "pregunta": "19. ¿Qué órgano investiga los delitos de fraude contra los intereses financieros de la UE?",
+        "opciones": [
+            "a) Europol",
+            "b) Fiscalía Europea",
+            "c) Tribunal de Justicia",
+            "d) Comité de las Regiones"
+        ],
+        "correcta": 1,
+        "explicacion": "La Fiscalía Europea investiga los delitos de fraude que perjudiquen a los intereses financieros de la Unión."
+    },
+    {
+        "pregunta": "20. ¿Qué tratado sustituyó a la malograda Constitución Europea?",
+        "opciones": [
+            "a) Tratado de Niza",
+            "b) Tratado de Lisboa",
+            "c) Tratado de Ámsterdam",
+            "d) Tratado de Schengen"
+        ],
+        "correcta": 1,
+        "explicacion": "El Tratado de Lisboa sustituyó a la malograda Constitución Europea."
+    },
+    {
+        "pregunta": "21. ¿Qué tratado permitió la libre circulación de personas sin controles fronterizos?",
+        "opciones": [
+            "a) Tratado de Maastricht",
+            "b) Tratado de Schengen",
+            "c) Tratado de Roma",
+            "d) Tratado de París"
+        ],
+        "correcta": 1,
+        "explicacion": "El Tratado de Schengen (1985) permitió la libre circulación de personas sin controles fronterizos."
+    },
+    {
+        "pregunta": "22. ¿Qué principio limita las competencias de la UE a lo establecido en los tratados?",
+        "opciones": [
+            "a) Principio de subsidiariedad",
+            "b) Principio de proporcionalidad",
+            "c) Principio de atribución",
+            "d) Principio de solidaridad"
+        ],
+        "correcta": 2,
+        "explicacion": "El principio de atribución establece que la Unión actúa dentro de los límites de las competencias que le atribuyen los Estados miembros en los Tratados."
+    },
+    {
+        "pregunta": "23. ¿Qué formación del Consejo de la UE elabora la acción exterior de la Unión?",
+        "opciones": [
+            "a) Consejo de Asuntos Generales",
+            "b) Consejo de Asuntos Exteriores",
+            "c) Consejo de Justicia",
+            "d) Consejo Económico"
+        ],
+        "correcta": 1,
+        "explicacion": "El Consejo de Asuntos Exteriores elabora la acción exterior de la Unión."
+    },
+    {
+        "pregunta": "24. ¿Qué órgano prepara los trabajos del Consejo de la UE?",
+        "opciones": [
+            "a) Comité Económico y Social",
+            "b) Comité de Representantes Permanentes",
+            "c) Comité de las Regiones",
+            "d) Comité Ejecutivo del BCE"
+        ],
+        "correcta": 1,
+        "explicacion": "El Comité de Representantes Permanentes de los Gobiernos de los Estados miembros prepara los trabajos del Consejo."
+    },
+    {
+        "pregunta": "25. ¿Qué institución tiene el derecho de iniciativa legislativa en la UE?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Comisión Europea",
+            "d) Tribunal de Justicia"
+        ],
+        "correcta": 2,
+        "explicacion": "Los actos legislativos de la Unión sólo podrán adoptarse a propuesta de la Comisión."
+    },
+    {
+        "pregunta": "26. ¿Qué institución elige al Presidente de la Comisión Europea?",
+        "opciones": [
+            "a) Consejo Europeo",
+            "b) Parlamento Europeo",
+            "c) Consejo de la UE",
+            "d) Los ciudadanos en elecciones directas"
+        ],
+        "correcta": 1,
+        "explicacion": "El Parlamento Europeo elige al Presidente de la Comisión."
+    },
+    {
+        "pregunta": "27. ¿Cuánto dura el mandato del Presidente de la Comisión Europea?",
+        "opciones": [
+            "a) 2 años",
+            "b) 5 años",
+            "c) 7 años",
+            "d) 10 años"
+        ],
+        "correcta": 1,
+        "explicacion": "El mandato de la Comisión (y por tanto de su Presidente) es de cinco años."
+    },
+    {
+        "pregunta": "28. ¿Qué institución nombra al Alto Representante para Asuntos Exteriores?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Comisión Europea",
+            "d) Consejo de la UE"
+        ],
+        "correcta": 1,
+        "explicacion": "El Consejo Europeo nombra por mayoría cualificada al Alto Representante de la Unión para Asuntos Exteriores y Política de Seguridad."
+    },
+    {
+        "pregunta": "29. ¿Qué tribunal actúa como instancia de apelación en la UE?",
+        "opciones": [
+            "a) Tribunal de Justicia",
+            "b) Tribunal General",
+            "c) Tribunal de Cuentas",
+            "d) Tribunal Europeo de Derechos Humanos"
+        ],
+        "correcta": 0,
+        "explicacion": "El Tribunal de Justicia actúa como instancia de apelación para las resoluciones del Tribunal General."
+    },
+    {
+        "pregunta": "30. ¿Qué institución garantiza el respeto del Derecho en la interpretación de los Tratados?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Tribunal de Justicia",
+            "d) Comisión Europea"
+        ],
+        "correcta": 2,
+        "explicacion": "El Tribunal de Justicia de la Unión Europea garantiza el respeto del Derecho en la interpretación y aplicación de los Tratados."
+    },
+    {
+        "pregunta": "31. ¿Qué órgano se ocupa de la gestión diaria del Banco Central Europeo?",
+        "opciones": [
+            "a) Consejo de Gobierno",
+            "b) Comité Ejecutivo",
+            "c) Consejo General",
+            "d) Comisión Monetaria"
+        ],
+        "correcta": 1,
+        "explicacion": "El Comité Ejecutivo del BCE se ocupa de la gestión diaria."
+    },
+    {
+        "pregunta": "32. ¿Qué institución examina la legalidad y regularidad de los ingresos y gastos de la UE?",
+        "opciones": [
+            "a) Tribunal de Justicia",
+            "b) Tribunal de Cuentas",
+            "c) Comisión Europea",
+            "d) Parlamento Europeo"
+        ],
+        "correcta": 1,
+        "explicacion": "El Tribunal de Cuentas examina la legalidad y regularidad de los ingresos y gastos y garantiza una buena gestión financiera."
+    },
+    {
+        "pregunta": "33. ¿Cuánto dura el mandato de los miembros del Tribunal de Cuentas?",
+        "opciones": [
+            "a) 3 años",
+            "b) 5 años",
+            "c) 6 años",
+            "d) 10 años"
+        ],
+        "correcta": 2,
+        "explicacion": "Los miembros del Tribunal de Cuentas son nombrados para un período de seis años."
+    },
+    {
+        "pregunta": "34. ¿Qué órgano de la UE es consultivo en temas de política económica y social?",
+        "opciones": [
+            "a) Comité de las Regiones",
+            "b) Comité Económico y Social Europeo",
+            "c) Consejo Económico y Financiero",
+            "d) Comité de Representantes Permanentes"
+        ],
+        "correcta": 1,
+        "explicacion": "El Comité Económico y Social Europeo (CESE) es un órgano consultivo de la UE en temas de política económica y social."
+    },
+    {
+        "pregunta": "35. ¿Qué institución representa a las regiones en la UE?",
+        "opciones": [
+            "a) Comité de las Regiones",
+            "b) Consejo de la UE",
+            "c) Parlamento Europeo",
+            "d) Tribunal de Cuentas"
+        ],
+        "correcta": 0,
+        "explicacion": "El Comité de las Regiones representa a las regiones en la UE."
+    },
+    {
+        "pregunta": "36. ¿Qué tratado reformó el sistema institucional para la ampliación de la UE?",
+        "opciones": [
+            "a) Tratado de Ámsterdam",
+            "b) Tratado de Niza",
+            "c) Tratado de Lisboa",
+            "d) Tratado de Maastricht"
+        ],
+        "correcta": 1,
+        "explicacion": "El Tratado de Niza (2001) reformó el sistema institucional para la ampliación de la UE."
+    },
+    {
+        "pregunta": "37. ¿Qué tratado amplió las competencias de la UE reformando el de Maastricht?",
+        "opciones": [
+            "a) Tratado de Ámsterdam",
+            "b) Tratado de Niza",
+            "c) Tratado de Lisboa",
+            "d) Tratado de Roma"
+        ],
+        "correcta": 0,
+        "explicacion": "El Tratado de Ámsterdam (1997) reformó Maastricht, ampliando las competencias de la UE."
+    },
+    {
+        "pregunta": "38. ¿Qué principio evita que la UE exceda lo necesario para alcanzar sus objetivos?",
+        "opciones": [
+            "a) Principio de subsidiariedad",
+            "b) Principio de proporcionalidad",
+            "c) Principio de atribución",
+            "d) Principio de solidaridad"
+        ],
+        "correcta": 1,
+        "explicacion": "El principio de proporcionalidad establece que la acción de la Unión no excederá de lo necesario para alcanzar los objetivos de los Tratados."
+    },
+    {
+        "pregunta": "39. ¿Qué institución aprueba leyes junto con el Parlamento Europeo?",
+        "opciones": [
+            "a) Consejo Europeo",
+            "b) Consejo de la UE",
+            "c) Comisión Europea",
+            "d) Tribunal de Justicia"
+        ],
+        "correcta": 1,
+        "explicacion": "El Consejo de la UE ejerce conjuntamente con el Parlamento Europeo la función legislativa."
+    },
+    {
+        "pregunta": "40. ¿Qué institución adopta decisiones de política exterior?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo de la UE",
+            "c) Comisión Europea",
+            "d) Tribunal de Cuentas"
+        ],
+        "correcta": 1,
+        "explicacion": "El Consejo de la UE toma decisiones de política exterior."
+    },
+    {
+        "pregunta": "41. ¿Qué institución vela por la aplicación de los Tratados?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Comisión Europea",
+            "d) Tribunal de Justicia"
+        ],
+        "correcta": 2,
+        "explicacion": "La Comisión Europea vela por que se apliquen los Tratados y las medidas adoptadas por las instituciones."
+    },
+    {
+        "pregunta": "42. ¿Qué institución supervisa la aplicación del Derecho de la UE?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Comisión Europea",
+            "d) Tribunal de Justicia"
+        ],
+        "correcta": 2,
+        "explicacion": "La Comisión Europea supervisa la aplicación del Derecho de la Unión bajo el control del Tribunal de Justicia."
+    },
+    {
+        "pregunta": "43. ¿Qué institución ejecuta el presupuesto de la UE?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Comisión Europea",
+            "d) Tribunal de Cuentas"
+        ],
+        "correcta": 2,
+        "explicacion": "La Comisión Europea ejecuta el presupuesto y gestiona los programas."
+    },
+    {
+        "pregunta": "44. ¿Qué institución asume la representación exterior de la UE (excepto política exterior)?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Comisión Europea",
+            "d) Tribunal de Justicia"
+        ],
+        "correcta": 2,
+        "explicacion": "La Comisión Europea asume la representación exterior de la Unión, con excepción de la política exterior y de seguridad común."
+    },
+    {
+        "pregunta": "45. ¿Qué institución resuelve crisis y desacuerdos entre Estados miembros?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Comisión Europea",
+            "d) Tribunal de Justicia"
+        ],
+        "correcta": 1,
+        "explicacion": "El Consejo Europeo resuelve crisis y desacuerdos entre Estados miembros."
+    },
+    {
+        "pregunta": "46. ¿Qué institución define la política exterior y de seguridad de la UE?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Comisión Europea",
+            "d) Tribunal de Justicia"
+        ],
+        "correcta": 1,
+        "explicacion": "El Consejo Europeo define la política exterior y de seguridad de la UE."
+    },
+    {
+        "pregunta": "47. ¿Qué institución nombra altos cargos de la UE?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Comisión Europea",
+            "d) Tribunal de Justicia"
+        ],
+        "correcta": 1,
+        "explicacion": "El Consejo Europeo nombra altos cargos de la UE."
+    },
+    {
+        "pregunta": "48. ¿Qué institución ejerce funciones de control político?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Comisión Europea",
+            "d) Tribunal de Justicia"
+        ],
+        "correcta": 0,
+        "explicacion": "El Parlamento Europeo ejerce funciones de control político."
+    },
+    {
+        "pregunta": "49. ¿Qué institución elige al Presidente de la Comisión?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Comisión Europea",
+            "d) Tribunal de Justicia"
+        ],
+        "correcta": 0,
+        "explicacion": "El Parlamento Europeo elige al Presidente de la Comisión."
+    },
+    {
+        "pregunta": "50. ¿Qué institución garantiza una buena gestión financiera en la UE?",
+        "opciones": [
+            "a) Parlamento Europeo",
+            "b) Consejo Europeo",
+            "c) Tribunal de Cuentas",
+            "d) Comisión Europea"
+        ],
+        "correcta": 2,
+        "explicacion": "El Tribunal de Cuentas examina la legalidad y regularidad de los ingresos y gastos y garantiza una buena gestión financiera."
+    }
+        ];
+
+        let preguntaActual = 0;
+        let respuestasCorrectas = 0;
+        let respuestasUsuario = Array(preguntas.length).fill(null);
+
+        // Mostrar la primera pregunta al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('total-preguntas').textContent = preguntas.length;
+            generarIndice();
+            mostrarPregunta(preguntaActual);
+            actualizarControlesNavegacion();
+        });
+
+        // Función para generar el índice de preguntas
+        function generarIndice() {
+            const indice = document.getElementById('indice');
+            indice.innerHTML = '';
+            
+            preguntas.forEach((_, index) => {
+                const numero = document.createElement('div');
+                numero.className = 'numero-pregunta';
+                numero.textContent = index + 1;
+                numero.onclick = function() { irAPregunta(index); };
+                indice.appendChild(numero);
+            });
+        }
+
+        // Función para ir a una pregunta específica
+        function irAPregunta(num) {
+            preguntaActual = num;
+            mostrarPregunta(preguntaActual);
+            actualizarControlesNavegacion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Función para mostrar una pregunta
+        function mostrarPregunta(num) {
+            const form = document.getElementById('testForm');
+            form.innerHTML = '';
+            
+            const pregunta = preguntas[num];
+            
+            const divPregunta = document.createElement('div');
+            divPregunta.className = 'pregunta';
+            
+            const pTexto = document.createElement('p');
+            pTexto.textContent = pregunta.pregunta;
+            divPregunta.appendChild(pTexto);
+            
+            // Crear opciones de respuesta
+            pregunta.opciones.forEach((opcion, index) => {
+                const label = document.createElement('label');
+                
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'pregunta';
+                input.value = index;
+                input.onclick = function() { verificarRespuesta(index); };
+                
+                // Verificar si ya se respondió esta pregunta
+                if (respuestasUsuario[num] !== null) {
+                    input.disabled = true;
+                    if (index === pregunta.correcta) {
+                        label.classList.add('correcta');
+                    } else if (index === respuestasUsuario[num] && respuestasUsuario[num] !== pregunta.correcta) {
+                        label.classList.add('incorrecta');
+                    }
+                }
+                
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(opcion));
+                divPregunta.appendChild(label);
+            });
+            
+            // Mostrar explicación si ya se respondió
+            if (respuestasUsuario[num] !== null) {
+                const divExplicacion = document.createElement('div');
+                divExplicacion.className = 'explicacion';
+                divExplicacion.textContent = pregunta.explicacion;
+                divExplicacion.style.display = 'block';
+                divPregunta.appendChild(divExplicacion);
+            }
+            
+            form.appendChild(divPregunta);
+            document.getElementById('pregunta-actual').textContent = num + 1;
+            
+            // Actualizar el índice
+            actualizarIndice();
+        }
+
+        // Función para actualizar el índice
+        function actualizarIndice() {
+            const numeros = document.querySelectorAll('.numero-pregunta');
+            numeros.forEach((numero, index) => {
+                numero.classList.remove('respondida', 'respondida-incorrecta');
+                
+                if (respuestasUsuario[index] !== null) {
+                    if (respuestasUsuario[index] === preguntas[index].correcta) {
+                        numero.classList.add('respondida');
+                    } else {
+                        numero.classList.add('respondida-incorrecta');
+                    }
+                }
+            });
+        }
+
+        // Función para verificar la respuesta seleccionada
+        function verificarRespuesta(opcionSeleccionada) {
+            const pregunta = preguntas[preguntaActual];
+            respuestasUsuario[preguntaActual] = opcionSeleccionada;
+            
+            if (opcionSeleccionada === pregunta.correcta) {
+                respuestasCorrectas++;
+            } else if (respuestasUsuario[preguntaActual] !== null && pregunta.correcta === respuestasUsuario[preguntaActual]) {
+                // Si antes estaba correcta y ahora no, restamos
+                respuestasCorrectas--;
+            }
+            
+            // Actualizar la visualización de las opciones
+            mostrarPregunta(preguntaActual);
+            
+            // Mostrar resultado parcial
+            const preguntasRespondidas = respuestasUsuario.filter(r => r !== null).length;
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = `
+                <p>Respuestas correctas: ${respuestasCorrectas} de ${preguntasRespondidas}</p>
+                <p>Porcentaje de aciertos: ${preguntasRespondidas > 0 ? ((respuestasCorrectas / preguntasRespondidas) * 100).toFixed(1) : 0}%</p>
+            `;
+            resultadoDiv.style.display = 'block';
+            
+            // Actualizar controles de navegación
+            actualizarControlesNavegacion();
+        }
+
+        // Función para actualizar controles de navegación
+        function actualizarControlesNavegacion() {
+            document.getElementById('anterior-btn').style.display = preguntaActual === 0 ? 'none' : 'block';
+            document.getElementById('siguiente-btn').style.display = preguntaActual === preguntas.length - 1 ? 'none' : 'block';
+            document.getElementById('finalizar-btn').style.display = preguntaActual === preguntas.length - 1 ? 'block' : 'none';
+        }
+
+        // Función para avanzar a la siguiente pregunta
+        function siguientePregunta() {
+            if (preguntaActual < preguntas.length - 1) {
+                preguntaActual++;
+                mostrarPregunta(preguntaActual);
+                actualizarControlesNavegacion();
+            }
+        }
+
+        // Función para retroceder a la pregunta anterior
+        function anteriorPregunta() {
+            if (preguntaActual > 0) {
+                preguntaActual--;
+                mostrarPregunta(preguntaActual);
+                actualizarControlesNavegacion();
+            }
+        }
+
+        // Función para finalizar el test
+        function finalizarTest() {
+            const preguntasRespondidas = respuestasUsuario.filter(r => r !== null).length;
+            const resultadoFinal = `
+                <h3>Test completado</h3>
+                <p>Has respondido ${preguntasRespondidas} de ${preguntas.length} preguntas.</p>
+                <p>Respuestas correctas: ${respuestasCorrectas} (${preguntasRespondidas > 0 ? ((respuestasCorrectas / preguntasRespondidas) * 100).toFixed(1) : 0}%)</p>
+                <p>Respuestas incorrectas: ${preguntasRespondidas - respuestasCorrectas}</p>
+                <p>Preguntas sin responder: ${preguntas.length - preguntasRespondidas}</p>
+            `;
+            document.getElementById('resultado').innerHTML = resultadoFinal;
+        }
+    </script>
+</body>
+</html>
