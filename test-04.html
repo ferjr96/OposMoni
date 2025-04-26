@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test sobre Gobierno y Administración</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .pregunta {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .pregunta p {
+            font-weight: bold;
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .correcta {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .incorrecta {
+            color: #e74c3c;
+            text-decoration: line-through;
+        }
+        .respuesta-correcta {
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 5px;
+            display: none;
+        }
+        #resultado {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-left: 6px solid #3498db;
+            border-radius: 5px;
+            display: none;
+        }
+        #contador {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .explicacion {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 5px;
+            display: none;
+        }
+        #indice {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        .numero-pregunta {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ecf0f1;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .numero-pregunta:hover {
+            background-color: #bdc3c7;
+        }
+        .numero-pregunta.respondida {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .numero-pregunta.respondida-incorrecta {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .controles-navegacion {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        #anterior-btn {
+            background-color: #95a5a6;
+        }
+        #anterior-btn:hover {
+            background-color: #7f8c8d;
+        }
+        #finalizar-btn {
+            background-color: #e67e22;
+            display: none;
+        }
+        #finalizar-btn:hover {
+            background-color: #d35400;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test sobre Gobierno y Administración</h1>
+
+    
+    <form id="testForm">
+        <!-- Las preguntas se insertarán aquí dinámicamente -->
+    </form>
+    
+    <div class="controles-navegacion">
+        <button type="button" id="anterior-btn" onclick="anteriorPregunta()">Anterior</button>
+        <button type="button" id="siguiente-btn" onclick="siguientePregunta()">Siguiente</button>
+        <button type="button" id="finalizar-btn" onclick="finalizarTest()">Ver resultados finales</button>
+    </div>
+    <div id="contador">Pregunta <span id="pregunta-actual">1</span> de <span id="total-preguntas">30</span></div>
+    
+    <div id="indice">
+        <!-- Los números de pregunta se generarán aquí -->
+    </div>
+    <div id="resultado"></div>
+    
+    <script>
+               // Datos del test sobre Organización Territorial del Estado
+        const preguntas = [
+            {
+                pregunta: "1. ¿Cómo se organiza territorialmente el Estado según la Constitución Española?",
+                opciones: [
+                    "a) En municipios, provincias y Comunidades Autónomas",
+                    "b) Solo en Comunidades Autónomas",
+                    "c) En regiones históricas",
+                    "d) En distritos federales"
+                ],
+                correcta: 0,
+                explicacion: "El Estado se organiza territorialmente en municipios, provincias y Comunidades Autónomas según el artículo 137 de la Constitución."
+            },
+            {
+                pregunta: "2. ¿Qué principio garantiza el Estado en relación con las diferencias entre Comunidades Autónomas?",
+                opciones: [
+                    "a) Principio de jerarquía",
+                    "b) Principio de solidaridad",
+                    "c) Principio de subsidiariedad",
+                    "d) Principio de territorialidad"
+                ],
+                correcta: 1,
+                explicacion: "El Estado garantiza el principio de solidaridad y evita que las diferencias entre Estatutos impliquen privilegios económicos o sociales."
+            },
+            {
+                pregunta: "3. ¿Qué artículo de la Constitución regula la organización territorial del Estado?",
+                opciones: [
+                    "a) Artículo 2",
+                    "b) Artículo 8",
+                    "c) Título VIII (artículos 137 a 158)",
+                    "d) Título X"
+                ],
+                correcta: 2,
+                explicacion: "La organización territorial del Estado se regula en el Título VIII de la Constitución (artículos 137 a 158)."
+            },
+            {
+                pregunta: "4. ¿Quiénes pueden iniciar el proceso autonómico según el artículo 143 de la Constitución?",
+                opciones: [
+                    "a) El Gobierno central",
+                    "b) Las Diputaciones interesadas o el órgano interinsular y 2/3 de los municipios",
+                    "c) El Tribunal Constitucional",
+                    "d) El Rey"
+                ],
+                correcta: 1,
+                explicacion: "La iniciativa corresponde a las Diputaciones interesadas o al órgano interinsular y a 2/3 de los municipios cuya población represente la mayoría del censo electoral."
+            },
+            {
+                pregunta: "5. ¿Qué plazo hay que esperar para reiterar una iniciativa autonómica que no prosperó?",
+                opciones: [
+                    "a) 1 año",
+                    "b) 3 años",
+                    "c) 5 años",
+                    "d) 10 años"
+                ],
+                correcta: 2,
+                explicacion: "Si la iniciativa no prospera, solo podrá reiterarse pasados cinco años según el artículo 143.2 de la Constitución."
+            },
+            {
+                pregunta: "6. ¿Qué mayoría de municipios se necesita para el procedimiento del artículo 151 de la CE?",
+                opciones: [
+                    "a) La mitad de los municipios",
+                    "b) Dos tercios de los municipios",
+                    "c) Tres cuartas partes de los municipios",
+                    "d) Todos los municipios"
+                ],
+                correcta: 2,
+                explicacion: "Para el procedimiento del artículo 151 se necesitan tres cuartas partes de los municipios que representen la mayoría del censo electoral."
+            },
+            {
+                pregunta: "7. ¿Qué pueden hacer las Asambleas Legislativas de las CCAA según la Constitución?",
+                opciones: [
+                    "a) Nombrar al Presidente del Gobierno",
+                    "b) Tener iniciativa legislativa ante las Cortes Generales",
+                    "c) Modificar la Constitución",
+                    "d) Disolver el Parlamento"
+                ],
+                correcta: 1,
+                explicacion: "Las Asambleas Legislativas de las CCAA pueden ejercer la iniciativa legislativa ante las Cortes Generales."
+            },
+            {
+                pregunta: "8. ¿Qué tipo de competencias pueden asumir las CCAA según el artículo 148 CE?",
+                opciones: [
+                    "a) Solo competencias delegadas",
+                    "b) Solo competencias compartidas",
+                    "c) Competencias exclusivas en determinadas materias",
+                    "d) Todas las competencias del Estado"
+                ],
+                correcta: 2,
+                explicacion: "El artículo 148 CE enumera las competencias que las CCAA pueden asumir como exclusivas."
+            },
+            {
+                pregunta: "9. ¿Cuál de estas es competencia de las CCAA según el artículo 148 CE?",
+                opciones: [
+                    "a) Defensa y Fuerzas Armadas",
+                    "b) Relaciones internacionales",
+                    "c) Ordenación del territorio y urbanismo",
+                    "d) Sistema monetario"
+                ],
+                correcta: 2,
+                explicacion: "La ordenación del territorio y urbanismo es una competencia que pueden asumir las CCAA según el artículo 148.3 CE."
+            },
+            {
+                pregunta: "10. ¿Qué competencia NO pueden asumir inicialmente las CCAA?",
+                opciones: [
+                    "a) Organización de sus instituciones de autogobierno",
+                    "b) Justicia",
+                    "c) Ferias interiores",
+                    "d) Artesanía"
+                ],
+                correcta: 1,
+                explicacion: "La Administración de Justicia es competencia exclusiva del Estado según el artículo 149.1.5 CE."
+            },
+            {
+                pregunta: "11. ¿Qué artículo de la CE enumera las competencias exclusivas del Estado?",
+                opciones: [
+                    "a) Artículo 147",
+                    "b) Artículo 148",
+                    "c) Artículo 149",
+                    "d) Artículo 150"
+                ],
+                correcta: 2,
+                explicacion: "El artículo 149.1 CE enumera las materias de competencia exclusiva del Estado."
+            },
+            {
+                pregunta: "12. ¿Cuál de estas es competencia exclusiva del Estado?",
+                opciones: [
+                    "a) Urbanismo",
+                    "b) Nacionalidad e inmigración",
+                    "c) Turismo",
+                    "d) Museos locales"
+                ],
+                correcta: 1,
+                explicacion: "Nacionalidad, inmigración, emigración, extranjería y derecho de asilo son competencia exclusiva del Estado (art. 149.1.2 CE)."
+            },
+            {
+                pregunta: "13. ¿Qué tipo de ley se utiliza para aprobar los Estatutos de Autonomía?",
+                opciones: [
+                    "a) Ley ordinaria",
+                    "b) Ley orgánica",
+                    "c) Decreto-ley",
+                    "d) Real Decreto"
+                ],
+                correcta: 1,
+                explicacion: "Los Estatutos de Autonomía se aprueban mediante Ley Orgánica según el artículo 147.1 CE."
+            },
+            {
+                pregunta: "14. ¿Qué debe contener necesariamente un Estatuto de Autonomía?",
+                opciones: [
+                    "a) Lista de alcaldes",
+                    "b) Denominación, delimitación territorial, organización institucional y competencias",
+                    "c) Presupuesto anual",
+                    "d) Relación de funcionarios"
+                ],
+                correcta: 1,
+                explicacion: "Los Estatutos deben contener la denominación, delimitación territorial, organización institucional y competencias según el artículo 147.2 CE."
+            },
+            {
+                pregunta: "15. ¿Qué órgano controla la constitucionalidad de las normas autonómicas?",
+                opciones: [
+                    "a) El Gobierno",
+                    "b) El Tribunal Supremo",
+                    "c) El Tribunal Constitucional",
+                    "d) El Consejo de Estado"
+                ],
+                correcta: 2,
+                explicacion: "El Tribunal Constitucional controla la constitucionalidad de las disposiciones normativas con fuerza de ley."
+            },
+            {
+                pregunta: "16. ¿Qué recurso tienen las CCAA para su desarrollo económico?",
+                opciones: [
+                    "a) Solo impuestos estatales",
+                    "b) Un fondo de compensación interterritorial",
+                    "c) Préstamos internacionales",
+                    "d) Donaciones privadas"
+                ],
+                correcta: 1,
+                explicacion: "Las CCAA reciben recursos de un fondo de compensación interterritorial según el artículo 158 CE."
+            },
+            {
+                pregunta: "17. ¿Qué entidad es la básica de la organización territorial del Estado?",
+                opciones: [
+                    "a) La provincia",
+                    "b) El municipio",
+                    "c) La comarca",
+                    "d) La mancomunidad"
+                ],
+                correcta: 1,
+                explicacion: "El municipio es la entidad básica de la organización territorial del Estado según la Constitución."
+            },
+            {
+                pregunta: "18. ¿Qué población mínima se necesita para crear un nuevo municipio?",
+                opciones: [
+                    "a) 1.000 habitantes",
+                    "b) 4.000 habitantes",
+                    "c) 10.000 habitantes",
+                    "d) 20.000 habitantes"
+                ],
+                correcta: 1,
+                explicacion: "Se requieren al menos 4.000 habitantes para crear un nuevo municipio según la legislación actual."
+            },
+            {
+                pregunta: "19. ¿Qué servicio deben prestar TODOS los municipios?",
+                opciones: [
+                    "a) Transporte público urbano",
+                    "b) Biblioteca pública",
+                    "c) Alumbrado público",
+                    "d) Piscina municipal"
+                ],
+                correcta: 2,
+                explicacion: "El alumbrado público es un servicio obligatorio para todos los municipios."
+            },
+            {
+                pregunta: "20. ¿Qué servicio adicional deben prestar los municipios de más de 5.000 habitantes?",
+                opciones: [
+                    "a) Parque público",
+                    "b) Transporte colectivo urbano",
+                    "c) Policía local",
+                    "d) Instituto de educación secundaria"
+                ],
+                correcta: 0,
+                explicacion: "Los municipios de más de 5.000 habitantes deben ofrecer parque público y biblioteca pública adicionalmente."
+            },
+            {
+                pregunta: "21. ¿Qué órgano gobierna en los municipios que funcionan en Concejo Abierto?",
+                opciones: [
+                    "a) El alcalde y los concejales",
+                    "b) Solo el alcalde",
+                    "c) La asamblea vecinal y el alcalde",
+                    "d) Una junta gestora"
+                ],
+                correcta: 2,
+                explicacion: "En el Concejo Abierto, el gobierno corresponde a la asamblea vecinal y el alcalde."
+            },
+            {
+                pregunta: "22. ¿Qué es la provincia según la Constitución?",
+                opciones: [
+                    "a) Una división administrativa sin personalidad jurídica",
+                    "b) Una entidad local con personalidad jurídica propia",
+                    "c) Un distrito electoral",
+                    "d) Una circunscripción judicial"
+                ],
+                correcta: 1,
+                explicacion: "La provincia es una entidad local con personalidad jurídica propia según la Constitución."
+            },
+            {
+                pregunta: "23. ¿Qué órganos existen en TODAS las diputaciones provinciales?",
+                opciones: [
+                    "a) Presidente, vicepresidentes, Junta de Gobierno y Pleno",
+                    "b) Consejo de Ministros",
+                    "c) Asamblea Legislativa",
+                    "d) Tribunal Superior de Justicia"
+                ],
+                correcta: 0,
+                explicacion: "En todas las diputaciones existen el presidente, vicepresidentes, Junta de Gobierno y Pleno."
+            },
+            {
+                pregunta: "24. ¿Qué comunidades autónomas tienen regímenes forales especiales?",
+                opciones: [
+                    "a) Cataluña y Valencia",
+                    "b) País Vasco y Navarra",
+                    "c) Andalucía y Extremadura",
+                    "d) Galicia y Asturias"
+                ],
+                correcta: 1,
+                explicacion: "El País Vasco y Navarra tienen regímenes forales especiales reconocidos en la Constitución."
+            },
+            {
+                pregunta: "25. ¿Qué son los Cabildos en Canarias?",
+                opciones: [
+                    "a) Los ayuntamientos",
+                    "b) Los órganos de gobierno insular",
+                    "c) Las diputaciones provinciales",
+                    "d) Los tribunales superiores"
+                ],
+                correcta: 1,
+                explicacion: "Los Cabildos son los órganos de gobierno insular en Canarias."
+            },
+            {
+                pregunta: "26. ¿Qué son los Consejos en Baleares?",
+                opciones: [
+                    "a) Los ayuntamientos",
+                    "b) Los órganos de gobierno insular",
+                    "c) Las diputaciones provinciales",
+                    "d) Los tribunales superiores"
+                ],
+                correcta: 1,
+                explicacion: "Los Consejos son los órganos de gobierno insular en Baleares."
+            },
+            {
+                pregunta: "27. ¿Qué entidad coordina los servicios municipales en municipios pequeños?",
+                opciones: [
+                    "a) El Gobierno central",
+                    "b) La Comunidad Autónoma",
+                    "c) La Diputación provincial",
+                    "d) La Mancomunidad"
+                ],
+                correcta: 2,
+                explicacion: "La Diputación provincial coordina los servicios en municipios de menos de 20.000 habitantes."
+            },
+            {
+                pregunta: "28. ¿Qué es una mancomunidad de municipios?",
+                opciones: [
+                    "a) Una fusión de municipios",
+                    "b) Una asociación para gestionar servicios comunes",
+                    "c) Una división administrativa del Estado",
+                    "d) Un órgano de control municipal"
+                ],
+                correcta: 1,
+                explicacion: "Una mancomunidad es una asociación de municipios para gestionar servicios comunes."
+            },
+            {
+                pregunta: "29. ¿Qué es un área metropolitana?",
+                opciones: [
+                    "a) Un municipio muy grande",
+                    "b) Una asociación de municipios con vinculaciones económicas y sociales",
+                    "c) Una división de la provincia",
+                    "d) Un distrito especial"
+                ],
+                correcta: 1,
+                explicacion: "Un área metropolitana agrupa municipios con vinculaciones económicas y sociales para planificación conjunta."
+            },
+            {
+                pregunta: "30. ¿Qué población debe tener un municipio para ser considerado de 'gran población'?",
+                opciones: [
+                    "a) Más de 50.000 habitantes",
+                    "b) Más de 100.000 habitantes",
+                    "c) Más de 250.000 habitantes",
+                    "d) Más de 500.000 habitantes"
+                ],
+                correcta: 2,
+                explicacion: "Se consideran de gran población los municipios con más de 250.000 habitantes, entre otros casos."
+            },
+            {
+                pregunta: "31. ¿Qué artículo constitucional reconoce el derecho a la autonomía de nacionalidades y regiones?",
+                opciones: [
+                    "a) Artículo 1",
+                    "b) Artículo 2",
+                    "c) Artículo 8",
+                    "d) Artículo 16"
+                ],
+                correcta: 1,
+                explicacion: "El artículo 2 de la Constitución reconoce el derecho a la autonomía de nacionalidades y regiones."
+            },
+            {
+                pregunta: "32. ¿Qué mayoría se necesita en el referéndum para ratificar la iniciativa autonómica por el artículo 151 CE?",
+                opciones: [
+                    "a) Mayoría simple",
+                    "b) Mayoría absoluta de los electores de cada provincia",
+                    "c) Dos tercios de los votantes",
+                    "d) Tres quintos de los electores"
+                ],
+                correcta: 1,
+                explicacion: "Se requiere mayoría absoluta de los electores de cada provincia en el referéndum del artículo 151 CE."
+            },
+            {
+                pregunta: "33. ¿Qué competencia pueden asumir las CCAA en materia de transportes?",
+                opciones: [
+                    "a) Todos los transportes",
+                    "b) Solo transportes que discurran íntegramente en su territorio",
+                    "c) Solo transporte aéreo",
+                    "d) Solo transporte marítimo"
+                ],
+                correcta: 1,
+                explicacion: "Las CCAA pueden asumir competencias sobre ferrocarriles y carreteras cuyo itinerario se desarrolle íntegramente en su territorio."
+            },
+            {
+                pregunta: "34. ¿Qué tipo de puertos pueden gestionar las CCAA?",
+                opciones: [
+                    "a) Todos los puertos",
+                    "b) Solo puertos de interés general",
+                    "c) Puertos de refugio y deportivos",
+                    "d) Solo puertos fluviales"
+                ],
+                correcta: 2,
+                explicacion: "Las CCAA pueden gestionar puertos de refugio, puertos y aeropuertos deportivos que no desarrollen actividades comerciales."
+            },
+            {
+                pregunta: "35. ¿Qué competencia tienen las CCAA en materia de aguas?",
+                opciones: [
+                    "a) Todas las competencias sobre aguas",
+                    "b) Solo aguas termales",
+                    "c) Proyectos y aprovechamientos hidráulicos de interés de la Comunidad",
+                    "d) Solo aguas subterráneas"
+                ],
+                correcta: 2,
+                explicacion: "Las CCAA pueden asumir competencias sobre proyectos, construcción y explotación de aprovechamientos hidráulicos de su interés."
+            },
+            {
+                pregunta: "36. ¿Qué competencia es exclusiva del Estado en materia educativa?",
+                opciones: [
+                    "a) Gestión de centros educativos",
+                    "b) Regulación de las condiciones básicas que garanticen la igualdad",
+                    "c) Contratación de profesores",
+                    "d) Construcción de escuelas"
+                ],
+                correcta: 1,
+                explicacion: "El Estado tiene competencia exclusiva en la regulación de las condiciones básicas que garanticen la igualdad en el ejercicio de derechos."
+            },
+            {
+                pregunta: "37. ¿Qué competencia tienen las CCAA en materia de sanidad?",
+                opciones: [
+                    "a) Solo sanidad exterior",
+                    "b) Gestión de la sanidad dentro de su territorio",
+                    "c) Legislación sobre productos farmacéuticos",
+                    "d) Coordinación general de la sanidad"
+                ],
+                correcta: 1,
+                explicacion: "Las CCAA pueden asumir competencias en sanidad e higiene, mientras que el Estado tiene las bases y coordinación general."
+            },
+            {
+                pregunta: "38. ¿Qué son las leyes marco según el artículo 150.1 CE?",
+                opciones: [
+                    "a) Leyes que delegan competencias legislativas a las CCAA",
+                    "b) Leyes que anulan estatutos de autonomía",
+                    "c) Leyes que crean nuevas provincias",
+                    "d) Leyes que regulan los municipios"
+                ],
+                correcta: 0,
+                explicacion: "Las leyes marco atribuyen a las CCAA la facultad de dictar normas legislativas en el marco de principios fijados por el Estado."
+            },
+            {
+                pregunta: "39. ¿Qué control ejerce el Tribunal de Cuentas sobre las CCAA?",
+                opciones: [
+                    "a) Control político",
+                    "b) Control económico y presupuestario",
+                    "c) Control de constitucionalidad",
+                    "d) Control penal"
+                ],
+                correcta: 1,
+                explicacion: "El Tribunal de Cuentas ejerce control económico y presupuestario sobre las CCAA."
+            },
+            {
+                pregunta: "40. ¿Qué servicios debe coordinar la Diputación en municipios pequeños?",
+                opciones: [
+                    "a) Solo alumbrado público",
+                    "b) Solo recogida de residuos",
+                    "c) Servicios como abastecimiento de agua y residuos",
+                    "d) Solo educación"
+                ],
+                correcta: 2,
+                explicacion: "La Diputación coordina servicios como abastecimiento de agua, residuos, limpieza viaria, etc. en municipios pequeños."
+            },
+            {
+                pregunta: "41. ¿Qué es el Padrón Municipal?",
+                opciones: [
+                    "a) Un registro de propiedades",
+                    "b) Un registro administrativo de vecinos",
+                    "c) Un censo electoral",
+                    "d) Un registro de comercios"
+                ],
+                correcta: 1,
+                explicacion: "El Padrón municipal es el registro administrativo donde constan los vecinos de un municipio."
+            },
+            {
+                pregunta: "42. ¿Qué dato NO es obligatorio en el Padrón Municipal?",
+                opciones: [
+                    "a) Nombre y apellidos",
+                    "b) Domicilio habitual",
+                    "c) Número de teléfono",
+                    "d) Lugar y fecha de nacimiento"
+                ],
+                correcta: 2,
+                explicacion: "El número de teléfono no es un dato obligatorio en el Padrón Municipal."
+            },
+            {
+                pregunta: "43. ¿Qué órgano existe en todos los ayuntamientos?",
+                opciones: [
+                    "a) Junta de Gobierno Local",
+                    "b) Comisión Especial de Cuentas",
+                    "c) Consejo Sectorial",
+                    "d) Comisión Informativa"
+                ],
+                correcta: 1,
+                explicacion: "La Comisión Especial de Cuentas existe en todos los ayuntamientos, mientras que la Junta de Gobierno solo en los de más de 5.000 habitantes."
+            },
+            {
+                pregunta: "44. ¿Qué competencia municipal es propia según la legislación?",
+                opciones: [
+                    "a) Policía local",
+                    "b) Justicia",
+                    "c) Sanidad",
+                    "d) Educación secundaria"
+                ],
+                correcta: 0,
+                explicacion: "La policía local es una competencia propia de los municipios."
+            },
+            {
+                pregunta: "45. ¿Qué servicio deben prestar los municipios de más de 50.000 habitantes?",
+                opciones: [
+                    "a) Transporte colectivo urbano",
+                    "b) Universidad",
+                    "c) Hospital comarcal",
+                    "d) Tribunal de justicia"
+                ],
+                correcta: 0,
+                explicacion: "Los municipios de más de 50.000 habitantes deben ofrecer transporte colectivo urbano y protección del medio ambiente urbano."
+            },
+            {
+                pregunta: "46. ¿Qué es una comarca?",
+                opciones: [
+                    "a) Una división provincial",
+                    "b) Una entidad que agrupa varios municipios",
+                    "c) Un distrito municipal",
+                    "d) Una mancomunidad especial"
+                ],
+                correcta: 1,
+                explicacion: "Una comarca es una entidad que agrupa varios municipios, creada por las CCAA."
+            },
+            {
+                pregunta: "47. ¿Qué característica define a un área metropolitana?",
+                opciones: [
+                    "a) Tener más de 1 millón de habitantes",
+                    "b) Ser capital de provincia",
+                    "c) Tener vinculaciones económicas y sociales entre municipios",
+                    "d) Tener un aeropuerto internacional"
+                ],
+                correcta: 2,
+                explicacion: "Las áreas metropolitanas se definen por las vinculaciones económicas y sociales entre sus municipios."
+            },
+            {
+                pregunta: "48. ¿Qué órgano puede crear entidades de ámbito inferior al municipio?",
+                opciones: [
+                    "a) Solo el Gobierno central",
+                    "b) Solo las CCAA",
+                    "c) Los municipios",
+                    "d) Las diputaciones"
+                ],
+                correcta: 2,
+                explicacion: "Los municipios pueden establecer órganos territoriales de gestión desconcentrada de ámbito inferior al municipal."
+            },
+            {
+                pregunta: "49. ¿Qué población debe tener un municipio capital de provincia para ser de gran población?",
+                opciones: [
+                    "a) Más de 50.000 habitantes",
+                    "b) Más de 100.000 habitantes",
+                    "c) Más de 175.000 habitantes",
+                    "d) Más de 300.000 habitantes"
+                ],
+                correcta: 2,
+                explicacion: "Los municipios capitales de provincia con más de 175.000 habitantes se consideran de gran población."
+            },
+            {
+                pregunta: "50. ¿Qué caracteriza a los municipios que funcionan en Concejo Abierto?",
+                opciones: [
+                    "a) Tener menos de 100 habitantes",
+                    "b) Ser tradicional o por circunstancias especiales",
+                    "c) Estar en zonas montañosas",
+                    "d) Ser capitales comarcales"
+                ],
+                correcta: 1,
+                explicacion: "Funcionan en Concejo Abierto los municipios que tradicionalmente lo hacen o cuando circunstancias especiales lo aconsejan."
+            }
+        ];
+
+        let preguntaActual = 0;
+        let respuestasCorrectas = 0;
+        let respuestasUsuario = Array(preguntas.length).fill(null);
+
+        // Mostrar la primera pregunta al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('total-preguntas').textContent = preguntas.length;
+            generarIndice();
+            mostrarPregunta(preguntaActual);
+            actualizarControlesNavegacion();
+        });
+
+        // Función para generar el índice de preguntas
+        function generarIndice() {
+            const indice = document.getElementById('indice');
+            indice.innerHTML = '';
+            
+            preguntas.forEach((_, index) => {
+                const numero = document.createElement('div');
+                numero.className = 'numero-pregunta';
+                numero.textContent = index + 1;
+                numero.onclick = function() { irAPregunta(index); };
+                indice.appendChild(numero);
+            });
+        }
+
+        // Función para ir a una pregunta específica
+        function irAPregunta(num) {
+            preguntaActual = num;
+            mostrarPregunta(preguntaActual);
+            actualizarControlesNavegacion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Función para mostrar una pregunta
+        function mostrarPregunta(num) {
+            const form = document.getElementById('testForm');
+            form.innerHTML = '';
+            
+            const pregunta = preguntas[num];
+            
+            const divPregunta = document.createElement('div');
+            divPregunta.className = 'pregunta';
+            
+            const pTexto = document.createElement('p');
+            pTexto.textContent = pregunta.pregunta;
+            divPregunta.appendChild(pTexto);
+            
+            // Crear opciones de respuesta
+            pregunta.opciones.forEach((opcion, index) => {
+                const label = document.createElement('label');
+                
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'pregunta';
+                input.value = index;
+                input.onclick = function() { verificarRespuesta(index); };
+                
+                // Verificar si ya se respondió esta pregunta
+                if (respuestasUsuario[num] !== null) {
+                    input.disabled = true;
+                    if (index === pregunta.correcta) {
+                        label.classList.add('correcta');
+                    } else if (index === respuestasUsuario[num] && respuestasUsuario[num] !== pregunta.correcta) {
+                        label.classList.add('incorrecta');
+                    }
+                }
+                
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(opcion));
+                divPregunta.appendChild(label);
+            });
+            
+            // Mostrar explicación si ya se respondió
+            if (respuestasUsuario[num] !== null) {
+                const divExplicacion = document.createElement('div');
+                divExplicacion.className = 'explicacion';
+                divExplicacion.textContent = pregunta.explicacion;
+                divExplicacion.style.display = 'block';
+                divPregunta.appendChild(divExplicacion);
+            }
+            
+            form.appendChild(divPregunta);
+            document.getElementById('pregunta-actual').textContent = num + 1;
+            
+            // Actualizar el índice
+            actualizarIndice();
+        }
+
+        // Función para actualizar el índice
+        function actualizarIndice() {
+            const numeros = document.querySelectorAll('.numero-pregunta');
+            numeros.forEach((numero, index) => {
+                numero.classList.remove('respondida', 'respondida-incorrecta');
+                
+                if (respuestasUsuario[index] !== null) {
+                    if (respuestasUsuario[index] === preguntas[index].correcta) {
+                        numero.classList.add('respondida');
+                    } else {
+                        numero.classList.add('respondida-incorrecta');
+                    }
+                }
+            });
+        }
+
+        // Función para verificar la respuesta seleccionada
+        function verificarRespuesta(opcionSeleccionada) {
+            const pregunta = preguntas[preguntaActual];
+            respuestasUsuario[preguntaActual] = opcionSeleccionada;
+            
+            if (opcionSeleccionada === pregunta.correcta) {
+                respuestasCorrectas++;
+            } else if (respuestasUsuario[preguntaActual] !== null && pregunta.correcta === respuestasUsuario[preguntaActual]) {
+                // Si antes estaba correcta y ahora no, restamos
+                respuestasCorrectas--;
+            }
+            
+            // Actualizar la visualización de las opciones
+            mostrarPregunta(preguntaActual);
+            
+            // Mostrar resultado parcial
+            const preguntasRespondidas = respuestasUsuario.filter(r => r !== null).length;
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = `
+                <p>Respuestas correctas: ${respuestasCorrectas} de ${preguntasRespondidas}</p>
+                <p>Porcentaje de aciertos: ${preguntasRespondidas > 0 ? ((respuestasCorrectas / preguntasRespondidas) * 100).toFixed(1) : 0}%</p>
+            `;
+            resultadoDiv.style.display = 'block';
+            
+            // Actualizar controles de navegación
+            actualizarControlesNavegacion();
+        }
+
+        // Función para actualizar controles de navegación
+        function actualizarControlesNavegacion() {
+            document.getElementById('anterior-btn').style.display = preguntaActual === 0 ? 'none' : 'block';
+            document.getElementById('siguiente-btn').style.display = preguntaActual === preguntas.length - 1 ? 'none' : 'block';
+            document.getElementById('finalizar-btn').style.display = preguntaActual === preguntas.length - 1 ? 'block' : 'none';
+        }
+
+        // Función para avanzar a la siguiente pregunta
+        function siguientePregunta() {
+            if (preguntaActual < preguntas.length - 1) {
+                preguntaActual++;
+                mostrarPregunta(preguntaActual);
+                actualizarControlesNavegacion();
+            }
+        }
+
+        // Función para retroceder a la pregunta anterior
+        function anteriorPregunta() {
+            if (preguntaActual > 0) {
+                preguntaActual--;
+                mostrarPregunta(preguntaActual);
+                actualizarControlesNavegacion();
+            }
+        }
+
+        // Función para finalizar el test
+        function finalizarTest() {
+            const preguntasRespondidas = respuestasUsuario.filter(r => r !== null).length;
+            const resultadoFinal = `
+                <h3>Test completado</h3>
+                <p>Has respondido ${preguntasRespondidas} de ${preguntas.length} preguntas.</p>
+                <p>Respuestas correctas: ${respuestasCorrectas} (${preguntasRespondidas > 0 ? ((respuestasCorrectas / preguntasRespondidas) * 100).toFixed(1) : 0}%)</p>
+                <p>Respuestas incorrectas: ${preguntasRespondidas - respuestasCorrectas}</p>
+                <p>Preguntas sin responder: ${preguntas.length - preguntasRespondidas}</p>
+            `;
+            document.getElementById('resultado').innerHTML = resultadoFinal;
+        }
+    </script>
+</body>
+</html>
