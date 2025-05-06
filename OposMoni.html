@@ -166,27 +166,24 @@
         <!-- Contenedor para subtemas de Tramitación -->
         <div class="subtopics-container" id="tramitacion-subtopics">
             <div class="subtopics" id="tramitacion-subtopics-list"></div>
-            <button class="back-button" onclick="backToCategories()">Volver</button>
+            <button class="back-button" onclick="showSubtopics('tramitacion')">Volver</button>
         </div>
         
         <!-- Contenedor para subtemas de Ofimática -->
         <div class="subtopics-container" id="ofimatica-subtopics">
             <div class="subtopics" id="ofimatica-subtopics-list"></div>
-            <button class="back-button" onclick="backToCategories()">Volver</button>
+            <button class="back-button" onclick="hideSubtopics('ofimatica')">Volver</button>
         </div>
         
         <!-- Contenedor para tests -->
         <div class="tests-container" id="tests-container">
             <h3 id="test-title">Tests del Tema</h3>
             <div class="tests" id="tests-list"></div>
-            <button class="back-button" onclick="backToSubtopics()">Volver</button>
+            <button class="back-button" onclick="hideTests()">Volver</button>
         </div>
     </div>
     
     <script>
-        // Variable para guardar la categoría actual
-        let currentCategory = '';
-        
         // Inicializar la página
         document.addEventListener('DOMContentLoaded', function() {
             // Crear subtemas para Tramitación (1-31)
@@ -195,10 +192,7 @@
                 const subtopic = document.createElement('div');
                 subtopic.className = 'subtopic';
                 subtopic.textContent = 'Tema ' + i;
-                subtopic.onclick = function() { 
-                    currentCategory = 'tramitacion';
-                    showTests('Tramitación Procesal - Tema ' + i, i); 
-                };
+                subtopic.onclick = function() { showTests('Tramitación Procesal - Tema ' + i, i); };
                 tramitacionList.appendChild(subtopic);
             }
             
@@ -208,46 +202,34 @@
                 const subtopic = document.createElement('div');
                 subtopic.className = 'subtopic';
                 subtopic.textContent = 'Tema ' + i;
-                subtopic.onclick = function() { 
-                    currentCategory = 'ofimatica';
-                    showTests('Ofimática - Tema ' + i, i); 
-                };
+                subtopic.onclick = function() { showTests('Ofimática - Tema ' + i, i); };
                 ofimaticaList.appendChild(subtopic);
             }
             
             // Event listeners para las categorías principales
             document.getElementById('tramitacion').addEventListener('click', function() {
-                currentCategory = 'tramitacion';
                 showSubtopics('tramitacion');
             });
             
             document.getElementById('ofimatica').addEventListener('click', function() {
-                currentCategory = 'ofimatica';
                 showSubtopics('ofimatica');
             });
         });
         
         function showSubtopics(category) {
-            // Ocultar todo
             document.querySelectorAll('.subtopics-container').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.category').forEach(el => el.style.display = 'none');
             document.getElementById('tests-container').style.display = 'none';
             
-            // Mostrar los subtemas de la categoría seleccionada
             document.getElementById(category + '-subtopics').style.display = 'block';
         }
         
-        function backToCategories() {
-            // Ocultar subtemas
-            document.querySelectorAll('.subtopics-container').forEach(el => el.style.display = 'none');
-            // Mostrar categorías principales
+        function hideSubtopics(category) {
+            document.getElementById(category + '-subtopics').style.display = 'none';
             document.querySelectorAll('.category').forEach(el => el.style.display = 'block');
-            // Ocultar tests
-            document.getElementById('tests-container').style.display = 'none';
         }
         
         function showTests(topicName, topicNumber) {
-            // Ocultar subtemas
             document.querySelectorAll('.subtopics-container').forEach(el => el.style.display = 'none');
             
             const testsContainer = document.getElementById('tests-container');
@@ -280,17 +262,16 @@
                 testsList.appendChild(test);
             }
             
-            // Mostrar tests
             testsContainer.style.display = 'block';
         }
         
-        function backToSubtopics() {
-            // Ocultar tests
+        function hideTests() {
             document.getElementById('tests-container').style.display = 'none';
             
-            // Mostrar los subtemas de la categoría actual
-            if (currentCategory) {
-                document.getElementById(currentCategory + '-subtopics').style.display = 'block';
+            // Mostrar los subtemas del área correspondiente
+            const activeSubtopicContainer = document.querySelector('.subtopics-container[style*="display: block"]');
+            if (activeSubtopicContainer) {
+                activeSubtopicContainer.style.display = 'block';
             }
         }
     </script>
