@@ -260,14 +260,14 @@
             document.getElementById('test-title').textContent = 'Tests de ' + topicName;
             
             // Generar tests (aquí puedes personalizar cuántos tests hay por tema)
-            let testCount = 1; // Por defecto 1 test por tema
+            let testCount = 3; // Por defecto 1 test por tema
             
             // Ejemplo: algunos temas tienen más tests
-            if (topicNumber === 1 || topicNumber === 5 || topicNumber === 10 || topicNumber === 32) {
+            /*if (topicNumber === 1 || topicNumber === 5 || topicNumber === 10 || topicNumber === 32) {
                 testCount = 3;
             } else if (topicNumber === 15 || topicNumber === 20 || topicNumber === 35) {
                 testCount = 2;
-            }
+            }*/
             
             for (let i = 1; i <= testCount; i++) {
                 const test = document.createElement('div');
