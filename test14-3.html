@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tema 14. Los Cuerpos Generales (II): Situaciones  administrativas y disciplinarias</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+        .pregunta {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .pregunta p {
+            font-weight: bold;
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .correcta {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .incorrecta {
+            color: #e74c3c;
+            text-decoration: line-through;
+        }
+        .respuesta-correcta {
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 5px;
+            display: none;
+        }
+        #resultado {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-left: 6px solid #3498db;
+            border-radius: 5px;
+            display: none;
+        }
+        #contador {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .explicacion {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 5px;
+            display: none;
+        }
+        #indice {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        .numero-pregunta {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ecf0f1;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .numero-pregunta:hover {
+            background-color: #bdc3c7;
+        }
+        .numero-pregunta.respondida {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .numero-pregunta.respondida-incorrecta {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .controles-navegacion {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        #anterior-btn {
+            background-color: #95a5a6;
+        }
+        #anterior-btn:hover {
+            background-color: #7f8c8d;
+        }
+        #finalizar-btn {
+            background-color: #e67e22;
+            display: none;
+        }
+        #finalizar-btn:hover {
+            background-color: #d35400;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tema 14. Los Cuerpos Generales (II): Situaciones  administrativas y disciplinarias</h1>
+
+    
+    <form id="testForm">
+        <!-- Las preguntas se insertarán aquí dinámicamente -->
+    </form>
+    
+    <div class="controles-navegacion">
+        <button type="button" id="anterior-btn" onclick="anteriorPregunta()">Anterior</button>
+        <button type="button" id="siguiente-btn" onclick="siguientePregunta()">Siguiente</button>
+        <button type="button" id="finalizar-btn" onclick="finalizarTest()">Ver resultados finales</button>
+    </div>
+        <div id="contador">Pregunta <span id="pregunta-actual">1</span> de <span id="total-preguntas">30</span></div>
+    
+    <div id="indice">
+        <!-- Los números de pregunta se generarán aquí -->
+    </div>
+    <div id="resultado"></div>
+    
+    <script>
+               // Reemplazar "[a-d]\) --> por "
+        const preguntas = [
+  {
+    pregunta: "1. ¿Qué situación administrativa corresponde a un funcionario destinado en el Registro Civil Central?",
+    opciones: [
+      "a) Servicios especiales",
+      "b) Servicio activo", 
+      "c) Excedencia forzosa",
+      "d) Suspensión de funciones"
+    ],
+    correcta: 1,
+    explicacion: "El Registro Civil Central es uno de los centros de destino que determinan la situación de servicio activo según el artículo 521 LOPJ."
+  },
+  {
+    pregunta: "2. ¿Cuántos años de servicio previo se requieren para solicitar excedencia voluntaria por interés particular?",
+    opciones: [
+      "a) 2 años",
+      "b) 3 años",
+      "c) 5 años",
+      "d) No requiere antigüedad"
+    ],
+    correcta: 2,
+    explicacion: "Para solicitar excedencia voluntaria por interés particular se requieren 5 años de servicios previos según la normativa."
+  },
+  {
+    pregunta: "3. ¿Qué tipo de puesto se cubre mediante concurso de traslados?",
+    opciones: [
+      "a) Singularizados",
+      "b) Genéricos",
+      "c) Directivos",
+      "d) Interinos"
+    ],
+    correcta: 1,
+    explicacion: "Los concursos de traslados son el procedimiento para cubrir puestos genéricos vacantes."
+  },
+  {
+    pregunta: "4. ¿Qué sanción corresponde a una falta disciplinaria leve?",
+    opciones: [
+      "a) Apercibimiento",
+      "b) Suspensión hasta 6 meses",
+      "c) Traslado forzoso",
+      "d) Separación del servicio"
+    ],
+    correcta: 0,
+    explicacion: "Las faltas leves solo pueden corregirse con apercibimiento según el régimen disciplinario."
+  },
+  {
+    pregunta: "5. ¿Cuál es el plazo máximo para resolver un concurso específico?",
+    opciones: [
+      "a) 1 mes",
+      "b) 3 meses",
+      "c) 6 meses",
+      "d) 12 meses"
+    ],
+    correcta: 1,
+    explicacion: "El plazo para resolver concursos específicos es de 3 meses, nunca superior a 6 meses."
+  },
+  {
+    pregunta: "6. ¿Qué órgano es competente para imponer la sanción de separación del servicio?",
+    opciones: [
+      "a) El juez del tribunal correspondiente",
+      "b) El Ministro de Justicia",
+      "c) El Consejo General del Poder Judicial",
+      "d) El Director General de Justicia"
+    ],
+    correcta: 1,
+    explicacion: "El Ministro de Justicia es competente para imponer la sanción de separación del servicio en todo caso."
+  },
+  {
+    pregunta: "7. ¿Qué caracteriza a los puestos singularizados?",
+    opciones: [
+      "a) Tienen funciones estandarizadas",
+      "b) Requieren libre designación",
+      "c) Tienen contenido funcional individualizado",
+      "d) Son siempre temporales"
+    ],
+    correcta: 2,
+    explicacion: "Los puestos singularizados se diferencian por tener funciones asignadas de forma individualizada."
+  },
+  {
+    pregunta: "8. ¿Cuánto tiempo debe permanecer un funcionario en excedencia voluntaria por interés particular?",
+    opciones: [
+      "a) Mínimo 6 meses",
+      "b) Mínimo 1 año",
+      "c) Mínimo 2 años",
+      "d) No hay mínimo"
+    ],
+    correcta: 2,
+    explicacion: "Exige una permanencia mínima de dos años antes de poder solicitar el reingreso."
+  },
+  {
+    pregunta: "9. ¿Qué norma regula la excedencia por violencia de género?",
+    opciones: [
+      "a) Ley Orgánica 1/2004",
+      "b) Estatuto Básico del Empleado Público",
+      "c) Real Decreto 365/1995",
+      "d) Ley 30/1984"
+    ],
+    correcta: 1,
+    explicacion: "El Estatuto Básico del Empleado Público regula esta modalidad especial de excedencia."
+  },
+  {
+    pregunta: "10. ¿Qué derecho conservan los funcionarios en servicios especiales?",
+    opciones: [
+      "a) Actuar como peritos judiciales",
+      "b) Cómputo del tiempo para ascensos",
+      "c) Retribuciones íntegras de su plaza",
+      "d) Permanencia en su puesto original"
+    ],
+    correcta: 1,
+    explicacion: "Conservan el cómputo del tiempo para ascensos, trienios y derechos pasivos, salvo excepciones."
+  },
+  {
+    pregunta: "11. ¿Qué supuesto NO da lugar a servicios especiales?",
+    opciones: [
+      "a) Nombramiento como Director General",
+      "b) Elección como Diputado",
+      "c) Excedencia por cuidado de hijos",
+      "d) Misión en organismo internacional"
+    ],
+    correcta: 2,
+    explicacion: "La excedencia por cuidado de hijos es una situación diferente (excedencia voluntaria)."
+  },
+  {
+    pregunta: "12. ¿Cuántos puntos se otorgan por antigüedad en concursos para puestos genéricos?",
+    opciones: [
+      "a) 1 punto por año hasta 30",
+      "b) 2 puntos por año hasta 60",
+      "c) 3 puntos por año hasta 90",
+      "d) 5 puntos por año sin límite"
+    ],
+    correcta: 1,
+    explicacion: "Se otorgan 2 puntos por cada año completo de servicios, con máximo de 60 puntos."
+  },
+  {
+    pregunta: "13. ¿Qué plazo tiene un funcionario para tomar posesión en destino de otra CCAA?",
+    opciones: [
+      "a) 3 días",
+      "b) 8 días",
+      "c) 20 días",
+      "d) 1 mes"
+    ],
+    correcta: 2,
+    explicacion: "El plazo es de 20 días para cambio de comunidad autónoma (excepto Canarias/Baleares/Ceuta/Melilla: 1 mes)."
+  },
+  {
+    pregunta: "14. ¿Qué ocurre si un funcionario no solicita reingreso tras excedencia por servicios en sector público?",
+    opciones: [
+      "a) Se le da de baja definitiva",
+      "b) Pasa a excedencia por interés particular",
+      "c) Mantiene la situación indefinidamente",
+      "d) Debe indemnizar a la Administración"
+    ],
+    correcta: 1,
+    explicacion: "Si no solicita reingreso en un mes, pasa automáticamente a excedencia voluntaria por interés particular."
+  },
+  {
+    pregunta: "15. ¿Qué caracteriza a la provisión por libre designación?",
+    opciones: [
+      "a) Es el sistema ordinario",
+      "b) Requiere concurso previo",
+      "c) Se aplica a puestos directivos",
+      "d) Garantiza permanencia mínima de 3 años"
+    ],
+    correcta: 2,
+    explicacion: "La libre designación se aplica a puestos directivos y aquellos con especial responsabilidad."
+  },
+  {
+    pregunta: "16. ¿Qué sanción puede imponerse por falta muy grave?",
+    opciones: [
+      "a) Apercibimiento",
+      "b) Suspensión de 1 a 3 años",
+      "c) Traslado forzoso",
+      "d) b y c son correctas"
+    ],
+    correcta: 3,
+    explicacion: "Por falta muy grave puede imponerse suspensión (1-3 años) o traslado forzoso."
+  },
+  {
+    pregunta: "17. ¿Qué plazo tiene para prescribir una falta grave?",
+    opciones: [
+      "a) 2 meses",
+      "b) 6 meses", 
+      "c) 1 año",
+      "d) 2 años"
+    ],
+    correcta: 1,
+    explicacion: "Las faltas graves prescriben a los seis meses desde su comisión."
+  },
+  {
+    pregunta: "18. ¿Qué debe contener el acuerdo de incoación de un expediente disciplinario?",
+    opciones: [
+      "a) Designación de instructor",
+      "b) Causa motivadora",
+      "c) Cuerpo del expedientado",
+      "d) Todas las anteriores"
+    ],
+    correcta: 3,
+    explicacion: "El acuerdo debe contener designación de instructor y secretario, causa motivadora y datos del expedientado."
+  },
+  {
+    pregunta: "19. ¿Qué plazo tiene el instructor para formular propuesta de resolución?",
+    opciones: [
+      "a) 10 días",
+      "b) 15 días",
+      "c) 1 mes",
+      "d) 3 meses"
+    ],
+    correcta: 1,
+    explicacion: "Tras las alegaciones, el instructor tiene 15 días para formular propuesta de resolución."
+  },
+  {
+    pregunta: "20. ¿Qué ocurre si un funcionario suspendido provisionalmente es finalmente absuelto?",
+    opciones: [
+      "a) Debe devolver las retribuciones",
+      "b) El tiempo se computa como servicio activo",
+      "c) Pasa a excedencia voluntaria",
+      "d) Se le indemniza por daños"
+    ],
+    correcta: 1,
+    explicacion: "Si no se confirma la sanción, el tiempo de suspensión provisional se computa como servicio activo."
+  },
+  {
+    pregunta: "21. ¿Qué supuesto permite la suspensión provisional?",
+    opciones: [
+      "a) Denuncia anónima",
+      "b) Auto de procesamiento",
+      "c) Cambio de destino pendiente",
+      "d) Reorganización de servicios"
+    ],
+    correcta: 1,
+    explicacion: "La suspensión provisional puede acordarse cuando exista auto de prisión, procesamiento o apertura de juicio oral."
+  },
+  {
+    pregunta: "22. ¿Qué derechos económicos mantiene un funcionario en suspensión provisional?",
+    opciones: [
+      "a) Todos los de su puesto",
+      "b) Solo retribuciones básicas",
+      "c) Solo el sueldo base",
+      "d) Ninguno"
+    ],
+    correcta: 1,
+    explicacion: "Durante la suspensión provisional percibe retribuciones básicas y prestaciones familiares por hijo a cargo."
+  },
+  {
+    pregunta: "23. ¿Qué caracteriza a las relaciones de puestos de trabajo?",
+    opciones: [
+      "a) Son confidenciales",
+      "b) Deben ser públicas",
+      "c) Solo afectan a puestos directivos",
+      "d) Se aprueban por los sindicatos"
+    ],
+    correcta: 1,
+    explicacion: "Las relaciones de puestos de trabajo deben ser públicas según la normativa."
+  },
+  {
+    pregunta: "24. ¿Qué elementos identifican un puesto en las relaciones de puestos?",
+    opciones: [
+      "a) Denominación y ubicación",
+      "b) Complementos retributivos",
+      "c) Requisitos exigidos",
+      "d) Todas las anteriores"
+    ],
+    correcta: 3,
+    explicacion: "Las relaciones deben incluir denominación, ubicación, requisitos y complementos retributivos."
+  },
+  {
+    pregunta: "25. ¿Qué tipo de méritos pueden valorarse en concursos para puestos genéricos?",
+    opciones: [
+      "a) Solo antigüedad",
+      "b) Antigüedad y conocimientos de lengua cooficial",
+      "c) Antigüedad, idiomas y actividades docentes",
+      "d) Solo titulaciones académicas"
+    ],
+    correcta: 2,
+    explicacion: "Además de antigüedad, pueden valorarse conocimientos de lengua cooficial (hasta 12 puntos) y actividades docentes/publicaciones (hasta 15 puntos)."
+  },
+  {
+    pregunta: "26. ¿Cuántas fases tiene un concurso específico?",
+    opciones: [
+      "a) 1 fase",
+      "b) 2 fases",
+      "c) 3 fases",
+      "d) 4 fases"
+    ],
+    correcta: 1,
+    explicacion: "Los concursos específicos constan de dos fases: valoración de méritos y valoración de aptitudes."
+  },
+  {
+    pregunta: "27. ¿Qué porcentaje máximo puede valer la fase de aptitudes en concurso específico?",
+    opciones: [
+      "a) 20%",
+      "b) 30%",
+      "c) 40%",
+      "d) 50%"
+    ],
+    correcta: 2,
+    explicacion: "La valoración de aptitudes no puede superar el 40% de la puntuación total."
+  },
+  {
+    pregunta: "28. ¿Qué composición tiene la Comisión de Valoración para puestos singularizados?",
+    opciones: [
+      "a) 3 miembros de Administración",
+      "b) 4 miembros de Administración y sindicatos en minoría",
+      "c) 2 miembros de Administración y 2 sindicales",
+      "d) 5 miembros independientes"
+    ],
+    correcta: 1,
+    explicacion: "Se compone de 4 miembros de la Administración (1 al menos funcionario de Justicia) y representantes sindicales en minoría."
+  },
+  {
+    pregunta: "29. ¿Qué ocurre si un funcionario no toma posesión en plazo?",
+    opciones: [
+      "a) Se le concede prórroga automática",
+      "b) Pierde el derecho al destino",
+      "c) Debe justificar el retraso",
+      "d) Se le impone sanción leve"
+    ],
+    correcta: 1,
+    explicacion: "Los destinos adjudicados son irrenunciables y no tomar posesión en plazo implica perder el derecho al mismo."
+  },
+  {
+    pregunta: "30. ¿Qué requisito exige la renuncia a puesto singularizado?",
+    opciones: [
+      "a) Haberlo desempeñado 6 meses",
+      "b) Solicitud razonada tras 1 año",
+      "c) Tener alternativa de destino",
+      "d) Aprobación sindical"
+    ],
+    correcta: 1,
+    explicacion: "Pueden renunciar tras al menos 1 año en el puesto, mediante solicitud razonada."
+  },
+  {
+    pregunta: "31. ¿Qué caracteriza a la provisión por libre designación?",
+    opciones: [
+      "a) Es irrevocable",
+      "b) Los nombrados pueden ser cesados discrecionalmente",
+      "c) Requiere concurso previo",
+      "d) Garantiza 4 años en el puesto"
+    ],
+    correcta: 1,
+    explicacion: "Los funcionarios nombrados por libre designación pueden ser cesados con carácter discrecional."
+  },
+  {
+    pregunta: "32. ¿Qué derecho tienen las víctimas de violencia de género en movilidad?",
+    opciones: [
+      "a) Ascenso preferente",
+      "b) Traslado forzoso sin vacante obligatoria",
+      "c) Reducción de jornada remunerada",
+      "d) Excedencia con sueldo completo"
+    ],
+    correcta: 1,
+    explicacion: "Tienen derecho a traslado forzoso a otro puesto de igual cuerpo/categoría sin necesidad de plaza vacante."
+  },
+  {
+    pregunta: "33. ¿Qué criterio sigue la redistribución de efectivos?",
+    opciones: [
+      "a) Mayor antigüedad en el cuerpo",
+      "b) Menor antigüedad en el centro",
+      "c) Mejor cualificación profesional",
+      "d) Orden alfabético"
+    ],
+    correcta: 1,
+    explicacion: "La redistribución por necesidades del servicio afecta primero a los de menor antigüedad en el centro."
+  },
+  {
+    pregunta: "34. ¿Qué caracteriza la reordenación de efectivos?",
+    opciones: [
+      "a) Es siempre forzosa",
+      "b) Prioriza la voluntariedad",
+      "c) No modifica relaciones de puestos",
+      "d) Solo afecta a interinos"
+    ],
+    correcta: 1,
+    explicacion: "En la reordenación se prioriza la voluntariedad del funcionario, decidiendo por antigüedad si hay varios interesados."
+  },
+  {
+    pregunta: "35. ¿Qué puede incluir un plan de ordenación de recursos?",
+    opciones: [
+      "a) Reorganización estructural",
+      "b) Medidas de movilidad",
+      "c) Planes de formación",
+      "d) Todas las anteriores"
+    ],
+    correcta: 3,
+    explicacion: "Estos planes pueden incluir reorganización, movilidad, formación y previsión de nuevas incorporaciones."
+  },
+  {
+    pregunta: "36. ¿En qué caso se aplica adscripción provisional?",
+    opciones: [
+      "a) Cese en puesto de libre designación",
+      "b) Funcionarios de nuevo ingreso sin plazas",
+      "c) Reingreso sin reserva de puesto",
+      "d) Todas las anteriores"
+    ],
+    correcta: 3,
+    explicacion: "La adscripción provisional se aplica en todos estos supuestos según necesidades del servicio."
+  },
+  {
+    pregunta: "37. ¿Cuál es la duración máxima de una comisión de servicio?",
+    opciones: [
+      "a) 6 meses",
+      "b) 1 año prorrogable otro año",
+      "c) 2 años",
+      "d) 3 años"
+    ],
+    correcta: 1,
+    explicacion: "La duración máxima es de 1 año, prorrogable por otro año si el puesto no se cubre definitivamente."
+  },
+  {
+    pregunta: "38. ¿Quién sustituye en Secretarías de Juzgados?",
+    opciones: [
+      "a) Funcionario de Gestión Procesal del mismo centro",
+      "b) Cualquier funcionario disponible",
+      "c) Personal laboral cualificado",
+      "d) Interinos externos"
+    ],
+    correcta: 0,
+    explicacion: "El orden es: 1) Funcionario de Gestión Procesal del mismo centro; 2) Funcionario de Tramitación con requisitos."
+  },
+  {
+    pregunta: "39. ¿Qué norma regula la interinidad en la Administración de Justicia?",
+    opciones: [
+      "a) Ley 30/1984",
+      "b) Estatuto Básico del Empleado Público",
+      "c) Real Decreto 365/1995",
+      "d) Ley Orgánica del Poder Judicial"
+    ],
+    correcta: 1,
+    explicacion: "El EBEP regula específicamente la selección y condiciones de los funcionarios interinos."
+  },
+  {
+    pregunta: "40. ¿Cuál es el plazo máximo de interinidad por acumulación de tareas?",
+    opciones: [
+      "a) 6 meses en 12",
+      "b) 9 meses en 18",
+      "c) 1 año",
+      "d) 3 años"
+    ],
+    correcta: 1,
+    explicacion: "Por acumulación de tareas, el plazo máximo es 9 meses en período de 18 meses."
+  },
+  {
+    pregunta: "41. ¿Qué artículo de la LOPJ regula el régimen disciplinario?",
+    opciones: [
+      "a) Artículo 100",
+      "b) Artículo 234",
+      "c) Artículo 534",
+      "d) Artículo 621"
+    ],
+    correcta: 2,
+    explicacion: "El régimen disciplinario se regula en los artículos 534 a 540 de la LOPJ."
+  },
+  {
+    pregunta: "42. ¿Qué principio rige el procedimiento disciplinario?",
+    opciones: [
+      "a) Presunción de inocencia",
+      "b) Inversión de la carga de la prueba",
+      "c) Responsabilidad objetiva",
+      "d) Irretroactividad de normas desfavorables"
+    ],
+    correcta: 0,
+    explicacion: "El presunto responsable tiene derecho a la presunción de no responsabilidad administrativa hasta que se demuestre lo contrario."
+  },
+  {
+    pregunta: "43. ¿Qué falta comete quien incumple reiteradamente sus funciones?",
+    opciones: [
+      "a) Leve",
+      "b) Grave",
+      "c) Muy grave",
+      "d) Depende de la gravedad"
+    ],
+    correcta: 2,
+    explicacion: "El incumplimiento reiterado de las funciones inherentes al puesto está tipificado como falta muy grave."
+  },
+  {
+    pregunta: "44. ¿Qué falta es la desobediencia grave a órdenes superiores?",
+    opciones: [
+      "a) Leve",
+      "b) Grave",
+      "c) Muy grave",
+      "d) Depende de las circunstancias"
+    ],
+    correcta: 2,
+    explicacion: "La desobediencia grave o reiterada a órdenes superiores constituye falta muy grave."
+  },
+  {
+    pregunta: "45. ¿Qué sanción corresponde a una falta grave?",
+    opciones: [
+      "a) Apercibimiento",
+      "b) Suspensión hasta 1 año",
+      "c) Traslado forzoso",
+      "d) b y c son correctas"
+    ],
+    correcta: 3,
+    explicacion: "Por falta grave puede imponerse suspensión (hasta 1 año) o traslado forzoso."
+  },
+  {
+    pregunta: "46. ¿Qué órgano puede imponer traslado forzoso?",
+    opciones: [
+      "a) Solo el Ministro de Justicia",
+      "b) El Director General de Relaciones con la Administración de Justicia",
+      "c) Los órganos de las CCAA competentes",
+      "d) b y c son correctas"
+    ],
+    correcta: 3,
+    explicacion: "Tanto el Director General como los órganos autonómicos competentes pueden imponer traslado forzoso."
+  },
+  {
+    pregunta: "47. ¿Cuándo prescribe una sanción por falta leve?",
+    opciones: [
+      "a) 2 meses",
+      "b) 4 meses",
+      "c) 6 meses",
+      "d) 1 año"
+    ],
+    correcta: 1,
+    explicacion: "Las sanciones por faltas leves prescriben a los cuatro meses."
+  },
+  {
+    pregunta: "48. ¿Qué plazo tiene el procedimiento disciplinario?",
+    opciones: [
+      "a) 3 meses",
+      "b) 6 meses",
+      "c) 12 meses",
+      "d) 18 meses"
+    ],
+    correcta: 2,
+    explicacion: "La duración máxima del procedimiento disciplinario no puede exceder de 12 meses."
+  },
+  {
+    pregunta: "49. ¿Qué plazo tienen los Letrados Suplentes para reingresar?",
+    opciones: [
+      "a) 5 días",
+      "b) 10 días",
+      "c) 15 días",
+      "d) 1 mes"
+    ],
+    correcta: 1,
+    explicacion: "Los funcionarios que cesen como Letrados Suplentes deben solicitar reingreso en el plazo de 10 días."
+  },
+  {
+    pregunta: "50. ¿Cómo se reingresa tras cumplir suspensión definitiva?",
+    opciones: [
+      "a) Automáticamente al mismo puesto",
+      "b) Por concurso o libre designación",
+      "c) Por adscripción provisional",
+      "d) b y c son correctas"
+    ],
+    correcta: 3,
+    explicacion: "El reingreso puede ser por concurso/libre designación o provisionalmente por adscripción si lo permite el servicio."
+  }
+];
+
+        let preguntaActual = 0;
+        let respuestasCorrectas = 0;
+        let respuestasUsuario = Array(preguntas.length).fill(null);
+
+        // Mostrar la primera pregunta al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+        preguntas.forEach(p => {
+            // Guardamos la opción correcta original
+            const correctaOriginal = p.opciones[p.correcta];
+            // Mezclamos las opciones
+            p.opciones = mezclarArray(p.opciones);
+            // Actualizamos el índice de la nueva correcta
+            p.correcta = p.opciones.indexOf(correctaOriginal);
+        });
+
+            document.getElementById('total-preguntas').textContent = preguntas.length;
+            generarIndice();
+            mostrarPregunta(preguntaActual);
+            actualizarControlesNavegacion();
+        });
+        
+        //para mezclar
+            function mezclarArray(array) {
+            const copia = [...array];
+            for (let i = copia.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copia[i], copia[j]] = [copia[j], copia[i]];
+            }
+            return copia;
+            }
+
+        
+
+
+        // Función para generar el índice de preguntas
+        function generarIndice() {
+            const indice = document.getElementById('indice');
+            indice.innerHTML = '';
+            
+            preguntas.forEach((_, index) => {
+                const numero = document.createElement('div');
+                numero.className = 'numero-pregunta';
+                numero.textContent = index + 1;
+                numero.onclick = function() { irAPregunta(index); };
+                indice.appendChild(numero);
+            });
+        }
+
+        // Función para ir a una pregunta específica
+        function irAPregunta(num) {
+            preguntaActual = num;
+            mostrarPregunta(preguntaActual);
+            actualizarControlesNavegacion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Función para mostrar una pregunta
+        function mostrarPregunta(num) {
+            const form = document.getElementById('testForm');
+            form.innerHTML = '';
+            
+            const pregunta = preguntas[num];
+            
+            const divPregunta = document.createElement('div');
+            divPregunta.className = 'pregunta';
+            
+            const pTexto = document.createElement('p');
+            pTexto.textContent = pregunta.pregunta;
+            divPregunta.appendChild(pTexto);
+            
+            // Crear opciones de respuesta
+            pregunta.opciones.forEach((opcion, index) => {
+                const label = document.createElement('label');
+                
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'pregunta';
+                input.value = index;
+                input.onclick = function() { verificarRespuesta(index); };
+                
+                // Verificar si ya se respondió esta pregunta
+                if (respuestasUsuario[num] !== null) {
+                    input.disabled = true;
+                    if (index === pregunta.correcta) {
+                        label.classList.add('correcta');
+                    } else if (index === respuestasUsuario[num] && respuestasUsuario[num] !== pregunta.correcta) {
+                        label.classList.add('incorrecta');
+                    }
+                }
+                
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(opcion));
+                divPregunta.appendChild(label);
+            });
+            
+            // Mostrar explicación si ya se respondió
+            if (respuestasUsuario[num] !== null) {
+                const divExplicacion = document.createElement('div');
+                divExplicacion.className = 'explicacion';
+                divExplicacion.textContent = pregunta.explicacion;
+                divExplicacion.style.display = 'block';
+                divPregunta.appendChild(divExplicacion);
+            }
+            
+            form.appendChild(divPregunta);
+            document.getElementById('pregunta-actual').textContent = num + 1;
+            
+            // Actualizar el índice
+            actualizarIndice();
+        }
+
+        // Función para actualizar el índice
+        function actualizarIndice() {
+            const numeros = document.querySelectorAll('.numero-pregunta');
+            numeros.forEach((numero, index) => {
+                numero.classList.remove('respondida', 'respondida-incorrecta');
+                
+                if (respuestasUsuario[index] !== null) {
+                    if (respuestasUsuario[index] === preguntas[index].correcta) {
+                        numero.classList.add('respondida');
+                    } else {
+                        numero.classList.add('respondida-incorrecta');
+                    }
+                }
+            });
+        }
+
+        // Función para verificar la respuesta seleccionada
+        function verificarRespuesta(opcionSeleccionada) {
+            const pregunta = preguntas[preguntaActual];
+            respuestasUsuario[preguntaActual] = opcionSeleccionada;
+            
+            if (opcionSeleccionada === pregunta.correcta) {
+                respuestasCorrectas++;
+            } else if (respuestasUsuario[preguntaActual] !== null && pregunta.correcta === respuestasUsuario[preguntaActual]) {
+                // Si antes estaba correcta y ahora no, restamos
+                respuestasCorrectas--;
+            }
+            
+            // Actualizar la visualización de las opciones
+            mostrarPregunta(preguntaActual);
+            
+            // Mostrar resultado parcial
+            const preguntasRespondidas = respuestasUsuario.filter(r => r !== null).length;
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = `
+                <p>Respuestas correctas: ${respuestasCorrectas} de ${preguntasRespondidas}</p>
+                <p>Porcentaje de aciertos: ${preguntasRespondidas > 0 ? ((respuestasCorrectas / preguntasRespondidas) * 100).toFixed(1) : 0}%</p>
+            `;
+            resultadoDiv.style.display = 'block';
+            
+            // Actualizar controles de navegación
+            actualizarControlesNavegacion();
+        }
+
+        // Función para actualizar controles de navegación
+        function actualizarControlesNavegacion() {
+            document.getElementById('anterior-btn').style.display = preguntaActual === 0 ? 'none' : 'block';
+            document.getElementById('siguiente-btn').style.display = preguntaActual === preguntas.length - 1 ? 'none' : 'block';
+            document.getElementById('finalizar-btn').style.display = preguntaActual === preguntas.length - 1 ? 'block' : 'none';
+        }
+
+        // Función para avanzar a la siguiente pregunta
+        function siguientePregunta() {
+            if (preguntaActual < preguntas.length - 1) {
+                preguntaActual++;
+                mostrarPregunta(preguntaActual);
+                actualizarControlesNavegacion();
+            }
+        }
+
+        // Función para retroceder a la pregunta anterior
+        function anteriorPregunta() {
+            if (preguntaActual > 0) {
+                preguntaActual--;
+                mostrarPregunta(preguntaActual);
+                actualizarControlesNavegacion();
+            }
+        }
+
+        // Función para finalizar el test
+        function finalizarTest() {
+            const preguntasRespondidas = respuestasUsuario.filter(r => r !== null).length;
+            const resultadoFinal = `
+                <h3>Test completado</h3>
+                <p>Has respondido ${preguntasRespondidas} de ${preguntas.length} preguntas.</p>
+                <p>Respuestas correctas: ${respuestasCorrectas} (${preguntasRespondidas > 0 ? ((respuestasCorrectas / preguntasRespondidas) * 100).toFixed(1) : 0}%)</p>
+                <p>Respuestas incorrectas: ${preguntasRespondidas - respuestasCorrectas}</p>
+                <p>Preguntas sin responder: ${preguntas.length - preguntasRespondidas}</p>
+            `;
+            document.getElementById('resultado').innerHTML = resultadoFinal;
+            document.getElementById('reintentar-incorrectas-btn').style.display = 'block';
+        }
+        
+        function reintentarIncorrectas() {
+    const preguntasIncorrectas = preguntas
+        .map((pregunta, index) => ({ ...pregunta, indexOriginal: index }))
+        .filter((_, index) => respuestasUsuario[index] !== null && respuestasUsuario[index] !== preguntas[index].correcta);
+
+    if (preguntasIncorrectas.length === 0) {
+        alert('No has fallado ninguna pregunta.');
+        return;
+    }
+
+    preguntasIncorrectas.forEach(p => {
+        // Desordenar las opciones
+        const opcionesOriginales = [...p.opciones];
+        const correctaOriginal = p.opciones[p.correcta];
+
+        // Mezclar opciones
+        for (let i = opcionesOriginales.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [opcionesOriginales[i], opcionesOriginales[j]] = [opcionesOriginales[j], opcionesOriginales[i]];
+        }
+
+        p.opciones = opcionesOriginales;
+        p.correcta = opcionesOriginales.indexOf(correctaOriginal);
+    });
+
+    // Reiniciar variables con solo las incorrectas
+    preguntaActual = 0;
+    respuestasCorrectas = 0;
+    respuestasUsuario = Array(preguntasIncorrectas.length).fill(null);
+    preguntas.splice(0, preguntas.length, ...preguntasIncorrectas); // reemplaza el array de preguntas
+
+    // Actualizar interfaz
+    document.getElementById('reintentar-incorrectas-btn').style.display = 'none';
+    document.getElementById('resultado').style.display = 'none';
+    document.getElementById('finalizar-btn').style.display = 'none';
+
+    generarIndice();
+    mostrarPregunta(preguntaActual);
+    actualizarControlesNavegacion();
+}
+    </script>
+    <button type="button" id="reintentar-incorrectas-btn" style="display:none;" onclick="reintentarIncorrectas()">Reintentar preguntas falladas</button>
+</body>
+</html>

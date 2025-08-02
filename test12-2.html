@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tema 12. Cuerpos de Funcionarios de la Administración de Justicia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+        .pregunta {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .pregunta p {
+            font-weight: bold;
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .correcta {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .incorrecta {
+            color: #e74c3c;
+            text-decoration: line-through;
+        }
+        .respuesta-correcta {
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 5px;
+            display: none;
+        }
+        #resultado {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-left: 6px solid #3498db;
+            border-radius: 5px;
+            display: none;
+        }
+        #contador {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .explicacion {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 5px;
+            display: none;
+        }
+        #indice {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        .numero-pregunta {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ecf0f1;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .numero-pregunta:hover {
+            background-color: #bdc3c7;
+        }
+        .numero-pregunta.respondida {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .numero-pregunta.respondida-incorrecta {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .controles-navegacion {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        #anterior-btn {
+            background-color: #95a5a6;
+        }
+        #anterior-btn:hover {
+            background-color: #7f8c8d;
+        }
+        #finalizar-btn {
+            background-color: #e67e22;
+            display: none;
+        }
+        #finalizar-btn:hover {
+            background-color: #d35400;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tema 12. Cuerpos de Funcionarios de la Administración de Justicia</h1>
+
+    
+    <form id="testForm">
+        <!-- Las preguntas se insertarán aquí dinámicamente -->
+    </form>
+    
+    <div class="controles-navegacion">
+        <button type="button" id="anterior-btn" onclick="anteriorPregunta()">Anterior</button>
+        <button type="button" id="siguiente-btn" onclick="siguientePregunta()">Siguiente</button>
+        <button type="button" id="finalizar-btn" onclick="finalizarTest()">Ver resultados finales</button>
+    </div>
+        <div id="contador">Pregunta <span id="pregunta-actual">1</span> de <span id="total-preguntas">30</span></div>
+    
+    <div id="indice">
+        <!-- Los números de pregunta se generarán aquí -->
+    </div>
+    <div id="resultado"></div>
+    
+    <script>
+               // Reemplazar "[a-d]\) --> por "
+        const preguntas = [
+  {
+    pregunta: "1. ¿Qué característica define a los Cuerpos Nacionales en la Administración de Justicia?",
+    opciones: [
+      "a) Dependen exclusivamente de las comunidades autónomas",
+      "b) Su ámbito de actuación está limitado a una provincia",
+      "c) Tienen carácter nacional y sirven a toda la Administración de Justicia",
+      "d) Son temporales y se renuevan cada año"
+    ],
+    correcta: 2,
+    explicacion: "Los Cuerpos al servicio de la Administración de Justicia tienen carácter nacional, según se especifica en el documento."
+  },
+  {
+    pregunta: "2. ¿Qué aspectos incluyen las competencias del Ministerio de Justicia sobre los funcionarios?",
+    opciones: [
+      "a) Solo la selección y formación inicial",
+      "b) Su estatuto jurídico, selección, formación, provisión de destinos y régimen disciplinario",
+      "c) Exclusivamente el régimen salarial",
+      "d) Solo los ascensos"
+    ],
+    correcta: 1,
+    explicacion: "Las competencias incluyen todas las materias relativas a su estatuto y régimen jurídico: selección, formación, provisión de destinos, ascensos, situaciones administrativas, jornada laboral y régimen disciplinario."
+  },
+  {
+    pregunta: "3. ¿En qué caso se pueden nombrar funcionarios interinos?",
+    opciones: [
+      "a) Siempre que haya vacantes",
+      "b) Por razones de urgencia o necesidad",
+      "c) Para sustituir vacaciones",
+      "d) Para pruebas piloto"
+    ],
+    correcta: 1,
+    explicacion: "Por razones de urgencia o necesidad, podrán nombrarse funcionarios interinos hasta que desaparezcan las causas que motivaron su nombramiento."
+  },
+  {
+    pregunta: "4. ¿Qué personal puede auxiliar a la Administración de Justicia en actividades que no sean propias de sus cuerpos?",
+    opciones: [
+      "a) Solo funcionarios de otras administraciones",
+      "b) Funcionarios de otras administraciones con carácter ocasional o permanente",
+      "c) Exclusivamente personal laboral",
+      "d) Solo voluntarios"
+    ],
+    correcta: 1,
+    explicacion: "Pueden prestar servicios funcionarios de otras administraciones con carácter ocasional o permanente para actividades que no sean propias de los cuerpos de la Administración de Justicia."
+  },
+  {
+    pregunta: "5. ¿Qué norma rige principalmente a los funcionarios de carrera de la Administración de Justicia?",
+    opciones: [
+      "a) Solo la LOPJ",
+      "b) La LOPJ y disposiciones de desarrollo, con carácter supletorio la normativa estatal sobre Función Pública",
+      "c) Exclusivamente los reglamentos autonómicos",
+      "d) Los convenios colectivos"
+    ],
+    correcta: 1,
+    explicacion: "Se rigen por la LOPJ, disposiciones de desarrollo y, supletoriamente, por la normativa estatal sobre Función Pública para lo no regulado expresamente."
+  },
+  {
+    pregunta: "6. ¿Qué contiene el Registro Central de personal funcionario?",
+    opciones: [
+      "a) Solo datos personales",
+      "b) Información sobre puestos de trabajo, su situación y ocupación",
+      "c) Exclusivamente historial salarial",
+      "d) Solo datos de formación"
+    ],
+    correcta: 1,
+    explicacion: "Incluye información relativa a los puestos de trabajo correspondientes a la Administración de Justicia, su situación, ocupación y evolución."
+  },
+  {
+    pregunta: "7. ¿Qué comunidades autónomas pueden establecer registros de personal?",
+    opciones: [
+      "a) Ninguna, es competencia exclusiva estatal",
+      "b) Todas las comunidades autónomas",
+      "c) Solo las que tengan competencias asumidas",
+      "d) Solo las comunidades históricas"
+    ],
+    correcta: 2,
+    explicacion: "Las Comunidades Autónomas podrán establecer registros respecto del personal que preste servicios en sus ámbitos territoriales."
+  },
+  {
+    pregunta: "8. ¿Qué garantiza el procedimiento de actualización de datos en los registros?",
+    opciones: [
+      "a) Solo la actualización anual",
+      "b) La inmediata anotación de datos de todo el personal y estados de ocupación de puestos",
+      "c) La eliminación de datos antiguos",
+      "d) Solo la actualización de datos personales"
+    ],
+    correcta: 1,
+    explicacion: "Garantiza la inmediata anotación de datos de todo el personal y de los estados de ocupación actual e histórica de los puestos de trabajo."
+  },
+  {
+    pregunta: "9. ¿Qué dato NO puede figurar en el expediente individual de un funcionario?",
+    opciones: [
+      "a) Tiempo de servicios",
+      "b) Titulación académica",
+      "c) Datos sobre raza o religión",
+      "d) Puestos desempeñados"
+    ],
+    correcta: 2,
+    explicacion: "En ningún caso figurarán datos sobre raza, religión u opinión ni circunstancias personales no relevantes para el trabajo."
+  },
+  {
+    pregunta: "10. ¿Qué información mínima contiene el escalafón de los funcionarios de carrera?",
+    opciones: [
+      "a) Nombre, apellidos y fotografía",
+      "b) DNI, nombre y apellidos, y tiempo de servicios en el Cuerpo",
+      "c) Solo el número de identificación fiscal",
+      "d) Dirección particular y teléfono"
+    ],
+    correcta: 1,
+    explicacion: "Figuran al menos: documento nacional de identidad, nombre y apellidos, y tiempo de servicios en el Cuerpo."
+  },
+  {
+    pregunta: "11. ¿Qué diferencia principal existe entre Cuerpos Generales y Especiales?",
+    opciones: [
+      "a) Los Generales realizan solo tareas administrativas",
+      "b) Los Especiales requieren titulación específica para sus funciones",
+      "c) Los Generales son temporales",
+      "d) Los Especiales no requieren formación"
+    ],
+    correcta: 1,
+    explicacion: "Los Cuerpos Especiales suponen el desempeño de funciones que requieren una profesión o titulación específica, mientras los Generales se centran en tareas procesales."
+  },
+  {
+    pregunta: "12. ¿Qué cuerpo general requiere titulación de Diplomado Universitario?",
+    opciones: [
+      "a) Auxilio Judicial",
+      "b) Tramitación Procesal y Administrativa",
+      "c) Gestión Procesal y Administrativa",
+      "d) Ayudantes de Laboratorio"
+    ],
+    correcta: 2,
+    explicacion: "El Cuerpo de Gestión Procesal y Administrativa exige titulación de Diplomado Universitario, Ingeniero Técnico o equivalente."
+  },
+  {
+    pregunta: "13. ¿Qué cuerpo general requiere titulación de Bachiller?",
+    opciones: [
+      "a) Auxilio Judicial",
+      "b) Tramitación Procesal y Administrativa",
+      "c) Gestión Procesal y Administrativa",
+      "d) Médicos Forenses"
+    ],
+    correcta: 1,
+    explicacion: "El Cuerpo de Tramitación Procesal y Administrativa exige título de Bachiller o equivalente."
+  },
+  {
+    pregunta: "14. ¿Qué cuerpo general requiere titulación de Graduado en ESO?",
+    opciones: [
+      "a) Auxilio Judicial",
+      "b) Tramitación Procesal y Administrativa",
+      "c) Gestión Procesal y Administrativa",
+      "d) Técnicos Especialistas"
+    ],
+    correcta: 0,
+    explicacion: "El Cuerpo de Auxilio Judicial exige título de Graduado en ESO o equivalente."
+  },
+  {
+    pregunta: "15. ¿Qué titulación adicional requiere el acceso al Cuerpo de Médicos Forenses además de Medicina?",
+    opciones: [
+      "a) Especialidad en Medicina Forense",
+      "b) Doctorado",
+      "c) Máster en Derecho",
+      "d) Ninguna adicional"
+    ],
+    correcta: 0,
+    explicacion: "Se exige titulación de Licenciado/Graduado en Medicina y Especialista en Medicina Forense."
+  },
+  {
+    pregunta: "16. ¿Qué tipo de titulación requieren los Facultativos del Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Carrera universitaria en Ciencias Experimentales y de la Salud",
+      "b) Solo Formación Profesional",
+      "c) Bachillerato",
+      "d) Ninguna titulación específica"
+    ],
+    correcta: 0,
+    explicacion: "Deben ser licenciados en carrera universitaria en Ciencias Experimentales y de la Salud, según la especialidad por la que se acceda."
+  },
+  {
+    pregunta: "17. ¿Qué titulación requieren los Técnicos Especialistas del Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Graduado en ESO",
+      "b) Bachiller",
+      "c) Técnico Superior en Formación Profesional o equivalente",
+      "d) Licenciatura universitaria"
+    ],
+    correcta: 2,
+    explicacion: "Se exige título de Técnico Superior en Formación Profesional o equivalente de familias profesionales determinadas en las convocatorias."
+  },
+  {
+    pregunta: "18. ¿Qué titulación requieren los Ayudantes de Laboratorio del Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Técnico en Formación Profesional o equivalente",
+      "b) Bachiller",
+      "c) Licenciatura universitaria",
+      "d) Graduado en ESO"
+    ],
+    correcta: 0,
+    explicacion: "Se exige título de Técnico en Formación Profesional o equivalente de familias profesionales determinadas en las convocatorias."
+  },
+  {
+    pregunta: "19. ¿Qué función NO corresponde a los médicos forenses?",
+    opciones: [
+      "a) Asistencia técnica a Juzgados y Tribunales",
+      "b) Vigilancia facultativa de detenidos",
+      "c) Emisión de informes a solicitud del Registro Civil",
+      "d) Ejercer como jueces suplentes"
+    ],
+    correcta: 3,
+    explicacion: "Los médicos forenses no ejercen funciones judiciales como jueces suplentes, entre sus funciones están la asistencia técnica, vigilancia de detenidos y emisión de informes."
+  },
+  {
+    pregunta: "20. ¿A quién están subordinados los médicos forenses en sus actuaciones?",
+    opciones: [
+      "a) Solo al Director del Instituto",
+      "b) A los Jueces y Fiscales en actuaciones procesales",
+      "c) Al Ministerio del Interior",
+      "d) A las comunidades autónomas"
+    ],
+    correcta: 1,
+    explicacion: "En actuaciones procesales están a las órdenes de Jueces y Fiscales, ejerciendo con independencia y criterios científicos."
+  },
+  {
+    pregunta: "21. ¿Dónde pueden estar destinados los médicos forenses?",
+    opciones: [
+      "a) Solo en Institutos de Medicina Legal",
+      "b) En Institutos de Medicina Legal o en el Instituto Nacional de Toxicología",
+      "c) Solo en hospitales",
+      "d) Solo en comisarías"
+    ],
+    correcta: 1,
+    explicacion: "Pueden estar destinados en Institutos de Medicina Legal y Ciencias Forenses o en el Instituto Nacional de Toxicología y Ciencias Forenses."
+  },
+  {
+    pregunta: "22. ¿Qué profesionales pueden prestar servicios en los Institutos de Medicina Legal además de médicos forenses?",
+    opciones: [
+      "a) Solo abogados",
+      "b) Psicólogos, trabajadores sociales y personal laboral determinado",
+      "c) Solo policías científicos",
+      "d) Solo enfermeros"
+    ],
+    correcta: 1,
+    explicacion: "Además de médicos forenses, pueden prestar servicios psicólogos, trabajadores sociales y personal laboral que se determine."
+  },
+  {
+    pregunta: "23. ¿Qué órgano dirige el Instituto de Medicina Legal y Ciencias Forenses?",
+    opciones: [
+      "a) Solo el Consejo de Dirección",
+      "b) El Director y el Consejo de Dirección",
+      "c) Solo el Ministerio de Justicia directamente",
+      "d) Una comisión de jueces"
+    ],
+    correcta: 1,
+    explicacion: "Los órganos directivos son el Director y el Consejo de Dirección."
+  },
+  {
+    pregunta: "24. ¿Qué servicio NO forma parte de los órganos de funcionamiento del Instituto de Medicina Legal?",
+    opciones: [
+      "a) Servicio de Patología Forense",
+      "b) Servicio de Clínica Médico Forense",
+      "c) Secretaría General",
+      "d) Servicio de Informática"
+    ],
+    correcta: 3,
+    explicacion: "Los órganos de funcionamiento son: Servicio de Patología Forense, Servicio de Clínica Médico Forense y Secretaría General. No se menciona un Servicio de Informática."
+  },
+  {
+    pregunta: "25. ¿Qué órgano asesora en el Instituto de Medicina Legal?",
+    opciones: [
+      "a) La Comisión de Docencia e Investigación",
+      "b) El Consejo Científico",
+      "c) La Junta de Personal",
+      "d) El Comité de Ética"
+    ],
+    correcta: 0,
+    explicacion: "El órgano de asesoramiento es la Comisión de Docencia e Investigación."
+  },
+  {
+    pregunta: "26. ¿Dónde debe existir al menos un Instituto de Medicina Legal?",
+    opciones: [
+      "a) En cada capital de provincia",
+      "b) En cada ciudad con Tribunal Superior de Justicia",
+      "c) En todas las ciudades con más de 100.000 habitantes",
+      "d) Solo en Madrid y Barcelona"
+    ],
+    correcta: 1,
+    explicacion: "Debe existir un Instituto en cada ciudad donde tenga su sede un Tribunal Superior de Justicia, con posibles excepciones autorizadas."
+  },
+  {
+    pregunta: "27. ¿Qué unidades deben contar obligatoriamente los Institutos de Medicina Legal?",
+    opciones: [
+      "a) Unidades de valoración forense integral",
+      "b) Unidades de hospitalización",
+      "c) Unidades de custodia de detenidos",
+      "d) Unidades de seguridad"
+    ],
+    correcta: 0,
+    explicacion: "Deben contar con unidades de valoración forense integral que pueden incluir psicólogos y trabajadores sociales."
+  },
+  {
+    pregunta: "28. ¿Qué formación específica debe tener el personal de los equipos técnicos de menores?",
+    opciones: [
+      "a) Solo en derecho procesal",
+      "b) En familia, menores, personas con discapacidad y violencia de género",
+      "c) Solo en psicología infantil",
+      "d) En contabilidad pública"
+    ],
+    correcta: 1,
+    explicacion: "Deben tener formación especializada en familia, menores, personas con discapacidad y violencia de género, con perspectiva de igualdad."
+  },
+  {
+    pregunta: "29. ¿Cómo se aprueban las normas de organización de los Institutos de Medicina Legal?",
+    opciones: [
+      "a) Por orden ministerial simple",
+      "b) Por real decreto a propuesta del Ministro de Justicia",
+      "c) Por decisión de cada instituto",
+      "d) Por convenio colectivo"
+    ],
+    correcta: 1,
+    explicacion: "Mediante real decreto a propuesta del Ministro de Justicia, previo informe del CGPJ y comunidades autónomas con traspasos."
+  },
+  {
+    pregunta: "30. ¿Qué tipo de órgano es el Instituto Nacional de Toxicología y Ciencias Forenses?",
+    opciones: [
+      "a) Órgano judicial",
+      "b) Órgano técnico adscrito al Ministerio de Justicia",
+      "c) Organismo autónomo",
+      "d) Fundación pública"
+    ],
+    correcta: 1,
+    explicacion: "Es un órgano técnico adscrito al Ministerio de Justicia."
+  },
+  {
+    pregunta: "31. ¿Qué ámbito territorial tiene el Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Solo la comunidad autónoma donde se ubica",
+      "b) Todo el territorio nacional",
+      "c) Solo las capitales de provincia",
+      "d) Ámbito europeo"
+    ],
+    correcta: 1,
+    explicacion: "Su ámbito de actuación se extiende a todo el territorio nacional."
+  },
+  {
+    pregunta: "32. ¿Qué función NO corresponde al Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Emitir informes a solicitud de autoridades judiciales",
+      "b) Practicar análisis toxicológicos ordenados por autoridades",
+      "c) Actuar como centro de referencia",
+      "d) Impartir justicia en casos penales"
+    ],
+    correcta: 3,
+    explicacion: "El Instituto no imparte justicia, sino que auxilia a la Administración de Justicia con funciones técnicas como análisis e informes."
+  },
+  {
+    pregunta: "33. ¿Qué tipo de análisis puede realizar el Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Solo los ordenados por jueces",
+      "b) Los ordenados por autoridades judiciales, gubernativas y médicos forenses",
+      "c) Solo los solicitados por particulares",
+      "d) Exclusivamente los requeridos por el Ministerio Fiscal"
+    ],
+    correcta: 1,
+    explicacion: "Puede practicar análisis ordenados por autoridades judiciales, gubernativas, el Ministerio Fiscal y médicos forenses en actuaciones judiciales."
+  },
+  {
+    pregunta: "34. ¿Qué función de prevención tiene el Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Ninguna",
+      "b) Solo registrar casos",
+      "c) Contribuir a prevenir intoxicaciones y atender consultas sobre las mismas",
+      "d) Solo en casos de terrorismo"
+    ],
+    correcta: 2,
+    explicacion: "Entre sus funciones está contribuir a la prevención de intoxicaciones y atender consultas sobre las mismas."
+  },
+  {
+    pregunta: "35. ¿Qué tipo de colaboración puede establecer el Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Solo con universidades españolas",
+      "b) Con universidades, instituciones sanitarias y organismos nacionales e internacionales",
+      "c) Solo con hospitales",
+      "d) Solo con laboratorios privados"
+    ],
+    correcta: 1,
+    explicacion: "Puede colaborar con universidades, instituciones sanitarias y organismos nacionales e internacionales en materias relacionadas con su actividad."
+  },
+  {
+    pregunta: "36. ¿Cómo se determina la estructura del Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Por cada director según necesidades",
+      "b) Mediante real decreto",
+      "c) Por las comunidades autónomas",
+      "d) Por convenio colectivo"
+    ],
+    correcta: 1,
+    explicacion: "Su estructura orgánica se determinará mediante real decreto."
+  },
+  {
+    pregunta: "37. ¿Qué personal puede trabajar en el Instituto Nacional de Toxicología además de sus cuerpos especiales?",
+    opciones: [
+      "a) Solo personal laboral",
+      "b) Funcionarios de otros cuerpos, de otras administraciones y personal laboral",
+      "c) Solo voluntarios",
+      "d) Solo personal en prácticas"
+    ],
+    correcta: 1,
+    explicacion: "Pueden prestar servicios funcionarios de otros cuerpos, de otras administraciones, y personal laboral para diversas funciones."
+  },
+  {
+    pregunta: "38. ¿De quién dependen jerárquicamente los funcionarios de los Cuerpos Especiales del Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Del juez decano",
+      "b) Del Director del Instituto o del Director del Instituto de Medicina Legal donde presten servicios",
+      "c) Del Ministerio del Interior",
+      "d) De las comunidades autónomas"
+    ],
+    correcta: 1,
+    explicacion: "Dependen jerárquicamente del Director del Instituto Nacional de Toxicología o del Director del Instituto de Medicina Legal donde presten servicios."
+  },
+  {
+    pregunta: "39. ¿Qué funciones realizan los Facultativos del Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Solo tareas administrativas",
+      "b) Asistencia técnica, análisis, informes y colaboración en prevención de intoxicaciones",
+      "c) Solo docencia universitaria",
+      "d) Solo investigación básica"
+    ],
+    correcta: 1,
+    explicacion: "Realizan asistencia técnica, análisis, emiten informes y colaboran en prevención de intoxicaciones, entre otras funciones."
+  },
+  {
+    pregunta: "40. ¿Dónde pueden prestar servicios los Facultativos del Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Solo en la sede central",
+      "b) En el Instituto Nacional de Toxicología y en otras unidades según relaciones de puestos",
+      "c) Solo en el extranjero",
+      "d) Solo en universidades"
+    ],
+    correcta: 1,
+    explicacion: "Prestan servicio en el Instituto Nacional de Toxicología y en otras unidades o institutos según relaciones de puestos de trabajo."
+  },
+  {
+    pregunta: "41. ¿Qué funciones realizan los Técnicos Especialistas del Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Solo tareas administrativas",
+      "b) Auxilio técnico especializado en actividades científicas e investigación",
+      "c) Solo atención al público",
+      "d) Solo gestión de personal"
+    ],
+    correcta: 1,
+    explicacion: "Realizan funciones de auxilio técnico especializado en actividades científicas e investigación del Instituto."
+  },
+  {
+    pregunta: "42. ¿A qué cuerpo pueden acceder por promoción interna los Técnicos Especialistas?",
+    opciones: [
+      "a) Al Cuerpo de Médicos Forenses",
+      "b) Al Cuerpo de Facultativos del Instituto Nacional de Toxicología",
+      "c) Al Cuerpo de Gestión Procesal",
+      "d) Al Cuerpo de Auxilio Judicial"
+    ],
+    correcta: 1,
+    explicacion: "Pueden acceder al Cuerpo de Facultativos del Instituto Nacional de Toxicología si reúnen los requisitos."
+  },
+  {
+    pregunta: "43. ¿Qué funciones realizan los Ayudantes de Laboratorio del Instituto Nacional de Toxicología?",
+    opciones: [
+      "a) Solo tareas administrativas",
+      "b) Funciones de apoyo en actividades científicas e investigación",
+      "c) Solo atención telefónica",
+      "d) Solo mantenimiento de equipos"
+    ],
+    correcta: 1,
+    explicacion: "Realizan funciones de apoyo en actividades científicas e investigación, según su formación."
+  },
+  {
+    pregunta: "44. ¿Qué régimen se aplica al personal laboral de la Administración de Justicia?",
+    opciones: [
+      "a) Solo la LOPJ",
+      "b) Disposiciones legales, reglamentarias, convenio colectivo y contrato de trabajo",
+      "c) Exclusivamente normas autonómicas",
+      "d) Solo decisiones judiciales"
+    ],
+    correcta: 1,
+    explicacion: "Se rige por disposiciones legales, reglamentarias, convenio colectivo aplicable y su contrato de trabajo."
+  },
+  {
+    pregunta: "45. ¿Qué ocurre con los funcionarios interinos respecto al régimen de clases pasivas?",
+    opciones: [
+      "a) Les es aplicable completamente",
+      "b) No les es aplicable",
+      "c) Les es aplicable parcialmente",
+      "d) Depende de cada comunidad autónoma"
+    ],
+    correcta: 1,
+    explicacion: "A los funcionarios interinos no les es aplicable el régimen de clases pasivas."
+  },
+  {
+    pregunta: "46. ¿Qué régimen se aplica a funcionarios de otras administraciones que presten servicios en la Administración de Justicia?",
+    opciones: [
+      "a) El régimen de la Administración de Justicia",
+      "b) La normativa de su administración de origen",
+      "c) Un régimen especial creado al efecto",
+      "d) El régimen laboral"
+    ],
+    correcta: 1,
+    explicacion: "Se aplica lo dispuesto en la normativa de la administración pública de la que procedan."
+  },
+  {
+    pregunta: "47. ¿En qué caso puede contratarse personal laboral en la Administración de Justicia?",
+    opciones: [
+      "a) Siempre que haya presupuesto",
+      "b) Cuando no existan cuerpos con la preparación técnica necesaria para determinadas actividades",
+      "c) Solo para sustituir vacaciones",
+      "d) Para cualquier función"
+    ],
+    correcta: 1,
+    explicacion: "Cuando no existan cuerpos con la preparación técnica necesaria para actividades específicas o de oficios, se puede contratar personal laboral."
+  },
+  {
+    pregunta: "48. ¿Qué información contiene el Registro Central de Personal?",
+    opciones: [
+      "a) Solo datos personales",
+      "b) Datos de personal y de puestos de trabajo, su situación y ocupación",
+      "c) Exclusivamente nóminas",
+      "d) Solo datos de formación"
+    ],
+    correcta: 1,
+    explicacion: "Incluye información sobre el personal y sobre los puestos de trabajo, su situación, ocupación y evolución."
+  },
+  {
+    pregunta: "49. ¿Quién aprueba las normas sobre el contenido del Registro Central de Personal?",
+    opciones: [
+      "a) Las comunidades autónomas",
+      "b) El Ministerio de Justicia",
+      "c) El Consejo General del Poder Judicial",
+      "d) Los sindicatos"
+    ],
+    correcta: 1,
+    explicacion: "El Ministerio de Justicia aprueba las normas sobre la información que debe contener el Registro."
+  },
+  {
+    pregunta: "50. ¿Qué garantiza el procedimiento de actualización de datos en los registros?",
+    opciones: [
+      "a) Solo la actualización anual",
+      "b) Inmediata anotación de datos de todo el personal y estados de ocupación de puestos",
+      "c) Eliminación de datos históricos",
+      "d) Solo actualización de datos personales"
+    ],
+    correcta: 1,
+    explicacion: "Garantiza la inmediata anotación de datos de todo el personal y de los estados de ocupación actual e histórica de los puestos de trabajo."
+  }
+];
+
+        let preguntaActual = 0;
+        let respuestasCorrectas = 0;
+        let respuestasUsuario = Array(preguntas.length).fill(null);
+
+        // Mostrar la primera pregunta al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+        preguntas.forEach(p => {
+            // Guardamos la opción correcta original
+            const correctaOriginal = p.opciones[p.correcta];
+            // Mezclamos las opciones
+            p.opciones = mezclarArray(p.opciones);
+            // Actualizamos el índice de la nueva correcta
+            p.correcta = p.opciones.indexOf(correctaOriginal);
+        });
+
+            document.getElementById('total-preguntas').textContent = preguntas.length;
+            generarIndice();
+            mostrarPregunta(preguntaActual);
+            actualizarControlesNavegacion();
+        });
+        
+        //para mezclar
+            function mezclarArray(array) {
+            const copia = [...array];
+            for (let i = copia.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copia[i], copia[j]] = [copia[j], copia[i]];
+            }
+            return copia;
+            }
+
+        
+
+
+        // Función para generar el índice de preguntas
+        function generarIndice() {
+            const indice = document.getElementById('indice');
+            indice.innerHTML = '';
+            
+            preguntas.forEach((_, index) => {
+                const numero = document.createElement('div');
+                numero.className = 'numero-pregunta';
+                numero.textContent = index + 1;
+                numero.onclick = function() { irAPregunta(index); };
+                indice.appendChild(numero);
+            });
+        }
+
+        // Función para ir a una pregunta específica
+        function irAPregunta(num) {
+            preguntaActual = num;
+            mostrarPregunta(preguntaActual);
+            actualizarControlesNavegacion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Función para mostrar una pregunta
+        function mostrarPregunta(num) {
+            const form = document.getElementById('testForm');
+            form.innerHTML = '';
+            
+            const pregunta = preguntas[num];
+            
+            const divPregunta = document.createElement('div');
+            divPregunta.className = 'pregunta';
+            
+            const pTexto = document.createElement('p');
+            pTexto.textContent = pregunta.pregunta;
+            divPregunta.appendChild(pTexto);
+            
+            // Crear opciones de respuesta
+            pregunta.opciones.forEach((opcion, index) => {
+                const label = document.createElement('label');
+                
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'pregunta';
+                input.value = index;
+                input.onclick = function() { verificarRespuesta(index); };
+                
+                // Verificar si ya se respondió esta pregunta
+                if (respuestasUsuario[num] !== null) {
+                    input.disabled = true;
+                    if (index === pregunta.correcta) {
+                        label.classList.add('correcta');
+                    } else if (index === respuestasUsuario[num] && respuestasUsuario[num] !== pregunta.correcta) {
+                        label.classList.add('incorrecta');
+                    }
+                }
+                
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(opcion));
+                divPregunta.appendChild(label);
+            });
+            
+            // Mostrar explicación si ya se respondió
+            if (respuestasUsuario[num] !== null) {
+                const divExplicacion = document.createElement('div');
+                divExplicacion.className = 'explicacion';
+                divExplicacion.textContent = pregunta.explicacion;
+                divExplicacion.style.display = 'block';
+                divPregunta.appendChild(divExplicacion);
+            }
+            
+            form.appendChild(divPregunta);
+            document.getElementById('pregunta-actual').textContent = num + 1;
+            
+            // Actualizar el índice
+            actualizarIndice();
+        }
+
+        // Función para actualizar el índice
+        function actualizarIndice() {
+            const numeros = document.querySelectorAll('.numero-pregunta');
+            numeros.forEach((numero, index) => {
+                numero.classList.remove('respondida', 'respondida-incorrecta');
+                
+                if (respuestasUsuario[index] !== null) {
+                    if (respuestasUsuario[index] === preguntas[index].correcta) {
+                        numero.classList.add('respondida');
+                    } else {
+                        numero.classList.add('respondida-incorrecta');
+                    }
+                }
+            });
+        }
+
+        // Función para verificar la respuesta seleccionada
+        function verificarRespuesta(opcionSeleccionada) {
+            const pregunta = preguntas[preguntaActual];
+            respuestasUsuario[preguntaActual] = opcionSeleccionada;
+            
+            if (opcionSeleccionada === pregunta.correcta) {
+                respuestasCorrectas++;
+            } else if (respuestasUsuario[preguntaActual] !== null && pregunta.correcta === respuestasUsuario[preguntaActual]) {
+                // Si antes estaba correcta y ahora no, restamos
+                respuestasCorrectas--;
+            }
+            
+            // Actualizar la visualización de las opciones
+            mostrarPregunta(preguntaActual);
+            
+            // Mostrar resultado parcial
+            const preguntasRespondidas = respuestasUsuario.filter(r => r !== null).length;
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = `
+                <p>Respuestas correctas: ${respuestasCorrectas} de ${preguntasRespondidas}</p>
+                <p>Porcentaje de aciertos: ${preguntasRespondidas > 0 ? ((respuestasCorrectas / preguntasRespondidas) * 100).toFixed(1) : 0}%</p>
+            `;
+            resultadoDiv.style.display = 'block';
+            
+            // Actualizar controles de navegación
+            actualizarControlesNavegacion();
+        }
+
+        // Función para actualizar controles de navegación
+        function actualizarControlesNavegacion() {
+            document.getElementById('anterior-btn').style.display = preguntaActual === 0 ? 'none' : 'block';
+            document.getElementById('siguiente-btn').style.display = preguntaActual === preguntas.length - 1 ? 'none' : 'block';
+            document.getElementById('finalizar-btn').style.display = preguntaActual === preguntas.length - 1 ? 'block' : 'none';
+        }
+
+        // Función para avanzar a la siguiente pregunta
+        function siguientePregunta() {
+            if (preguntaActual < preguntas.length - 1) {
+                preguntaActual++;
+                mostrarPregunta(preguntaActual);
+                actualizarControlesNavegacion();
+            }
+        }
+
+        // Función para retroceder a la pregunta anterior
+        function anteriorPregunta() {
+            if (preguntaActual > 0) {
+                preguntaActual--;
+                mostrarPregunta(preguntaActual);
+                actualizarControlesNavegacion();
+            }
+        }
+
+        // Función para finalizar el test
+        function finalizarTest() {
+            const preguntasRespondidas = respuestasUsuario.filter(r => r !== null).length;
+            const resultadoFinal = `
+                <h3>Test completado</h3>
+                <p>Has respondido ${preguntasRespondidas} de ${preguntas.length} preguntas.</p>
+                <p>Respuestas correctas: ${respuestasCorrectas} (${preguntasRespondidas > 0 ? ((respuestasCorrectas / preguntasRespondidas) * 100).toFixed(1) : 0}%)</p>
+                <p>Respuestas incorrectas: ${preguntasRespondidas - respuestasCorrectas}</p>
+                <p>Preguntas sin responder: ${preguntas.length - preguntasRespondidas}</p>
+            `;
+            document.getElementById('resultado').innerHTML = resultadoFinal;
+            document.getElementById('reintentar-incorrectas-btn').style.display = 'block';
+        }
+        
+        function reintentarIncorrectas() {
+    const preguntasIncorrectas = preguntas
+        .map((pregunta, index) => ({ ...pregunta, indexOriginal: index }))
+        .filter((_, index) => respuestasUsuario[index] !== null && respuestasUsuario[index] !== preguntas[index].correcta);
+
+    if (preguntasIncorrectas.length === 0) {
+        alert('No has fallado ninguna pregunta.');
+        return;
+    }
+
+    preguntasIncorrectas.forEach(p => {
+        // Desordenar las opciones
+        const opcionesOriginales = [...p.opciones];
+        const correctaOriginal = p.opciones[p.correcta];
+
+        // Mezclar opciones
+        for (let i = opcionesOriginales.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [opcionesOriginales[i], opcionesOriginales[j]] = [opcionesOriginales[j], opcionesOriginales[i]];
+        }
+
+        p.opciones = opcionesOriginales;
+        p.correcta = opcionesOriginales.indexOf(correctaOriginal);
+    });
+
+    // Reiniciar variables con solo las incorrectas
+    preguntaActual = 0;
+    respuestasCorrectas = 0;
+    respuestasUsuario = Array(preguntasIncorrectas.length).fill(null);
+    preguntas.splice(0, preguntas.length, ...preguntasIncorrectas); // reemplaza el array de preguntas
+
+    // Actualizar interfaz
+    document.getElementById('reintentar-incorrectas-btn').style.display = 'none';
+    document.getElementById('resultado').style.display = 'none';
+    document.getElementById('finalizar-btn').style.display = 'none';
+
+    generarIndice();
+    mostrarPregunta(preguntaActual);
+    actualizarControlesNavegacion();
+}
+    </script>
+    <button type="button" id="reintentar-incorrectas-btn" style="display:none;" onclick="reintentarIncorrectas()">Reintentar preguntas falladas</button>
+</body>
+</html>

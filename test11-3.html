@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tema 11. El Letrado de la Administración de Justicia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+        .pregunta {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .pregunta p {
+            font-weight: bold;
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .correcta {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .incorrecta {
+            color: #e74c3c;
+            text-decoration: line-through;
+        }
+        .respuesta-correcta {
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 5px;
+            display: none;
+        }
+        #resultado {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-left: 6px solid #3498db;
+            border-radius: 5px;
+            display: none;
+        }
+        #contador {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .explicacion {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 5px;
+            display: none;
+        }
+        #indice {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        .numero-pregunta {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ecf0f1;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .numero-pregunta:hover {
+            background-color: #bdc3c7;
+        }
+        .numero-pregunta.respondida {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .numero-pregunta.respondida-incorrecta {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .controles-navegacion {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        #anterior-btn {
+            background-color: #95a5a6;
+        }
+        #anterior-btn:hover {
+            background-color: #7f8c8d;
+        }
+        #finalizar-btn {
+            background-color: #e67e22;
+            display: none;
+        }
+        #finalizar-btn:hover {
+            background-color: #d35400;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tema 11. El Letrado de la Administración de Justicia</h1>
+
+    
+    <form id="testForm">
+        <!-- Las preguntas se insertarán aquí dinámicamente -->
+    </form>
+    
+    <div class="controles-navegacion">
+        <button type="button" id="anterior-btn" onclick="anteriorPregunta()">Anterior</button>
+        <button type="button" id="siguiente-btn" onclick="siguientePregunta()">Siguiente</button>
+        <button type="button" id="finalizar-btn" onclick="finalizarTest()">Ver resultados finales</button>
+    </div>
+        <div id="contador">Pregunta <span id="pregunta-actual">1</span> de <span id="total-preguntas">30</span></div>
+    
+    <div id="indice">
+        <!-- Los números de pregunta se generarán aquí -->
+    </div>
+    <div id="resultado"></div>
+    
+    <script>
+               // Reemplazar "[a-d]\) --> por "
+        const preguntas = [
+  {
+    pregunta: "1. ¿Qué artículo de la LOPJ regula específicamente la fe pública judicial de los Letrados?",
+    opciones: [
+      "a) Artículo 122",
+      "b) Artículo 453.1",
+      "c) Artículo 340",
+      "d) Artículo 210"
+    ],
+    correcta: 1,
+    explicacion: "El artículo 453.1 de la LOPJ regula el ejercicio exclusivo de la fe pública judicial por los Letrados."
+  },
+  {
+    pregunta: "2. ¿Qué tipo de actas elaboran los Letrados en ejercicio de la fe pública?",
+    opciones: [
+      "a) Solo actas de comparecencia",
+      "b) Actas de declaración y actas de notificación",
+      "c) Actas de actuaciones procesales y hechos con trascendencia procesal",
+      "d) Solo actas de vistas"
+    ],
+    correcta: 2,
+    explicacion: "Elaboran actas de actuaciones procesales en el Tribunal y de hechos con trascendencia procesal."
+  },
+  {
+    pregunta: "3. ¿Qué información deben dar los Letrados al autorizar poderes para pleitos?",
+    opciones: [
+      "a) Costes económicos del proceso",
+      "b) Alcance del poder conferido en cada caso",
+      "c) Duración estimada del procedimiento",
+      "d) Probabilidad de éxito de la demanda"
+    ],
+    correcta: 1,
+    explicacion: "Deben informar a los poderdantes del alcance del poder conferido en cada caso concreto."
+  },
+  {
+    pregunta: "4. ¿Qué libros de registro son responsabilidad de los Letrados?",
+    opciones: [
+      "a) Todos los que existan en el juzgado",
+      "b) Solo los de entrada y salida",
+      "c) Los determinados por el Ministerio de Justicia",
+      "d) Los que establezca cada Comunidad Autónoma"
+    ],
+    correcta: 2,
+    explicacion: "Son responsables de la llevanza de los libros que determine el Ministerio mediante reglamentos."
+  },
+  {
+    pregunta: "5. ¿En qué tipo de resoluciones pueden los Letrados poner término a un procedimiento?",
+    opciones: [
+      "a) En cualquier procedimiento",
+      "b) Solo en procedimientos de su competencia exclusiva",
+      "c) Cuando actúen como sustitutos del juez",
+      "d) En procedimientos no contenciosos"
+    ],
+    correcta: 1,
+    explicacion: "Pueden poner término al procedimiento del que tengan atribuida exclusiva competencia mediante decreto."
+  },
+  {
+    pregunta: "6. ¿Qué característica tienen los decretos de los Letrados?",
+    opciones: [
+      "a) Siempre son motivados",
+      "b) Solo requieren motivación a petición de parte",
+      "c) No requieren motivación",
+      "d) Son breves y no motivados"
+    ],
+    correcta: 0,
+    explicacion: "Los decretos serán siempre motivados y contendrán antecedentes de hecho y fundamentos de derecho."
+  },
+  {
+    pregunta: "7. ¿Qué recurso procede contra las diligencias de ordenación y decretos?",
+    opciones: [
+      "a) Recurso de apelación",
+      "b) Recurso de reposición",
+      "c) Los previstos en las leyes procesales",
+      "d) No son recurribles"
+    ],
+    correcta: 2,
+    explicacion: "Serán recurribles en los casos y formas previstos en las leyes procesales."
+  },
+  {
+    pregunta: "8. ¿Qué órgano aprueba las normas sobre reparto de asuntos?",
+    opciones: [
+      "a) El Ministerio de Justicia",
+      "b) Las Salas de Gobierno de los Tribunales",
+      "c) El Consejo General del Poder Judicial",
+      "d) Los Secretarios de Gobierno"
+    ],
+    correcta: 1,
+    explicacion: "Las Salas de Gobierno de los Tribunales de Justicia aprueban las normas sobre reparto."
+  },
+  {
+    pregunta: "9. ¿Qué competencia tienen los Letrados sobre el personal de la Oficina Judicial?",
+    opciones: [
+      "a) Nombramiento y cese",
+      "b) Organización y dirección en aspectos técnico-procesales",
+      "c) Gestión económica",
+      "d) Todas las anteriores"
+    ],
+    correcta: 1,
+    explicacion: "Competencia en organización, gestión e inspección del personal en aspectos técnico-procesales."
+  },
+  {
+    pregunta: "10. ¿Qué protocolo siguen los Letrados en Unidades Procesales de Apoyo Directo?",
+    opciones: [
+      "a) El que elijan libremente",
+      "b) El aprobado por el Secretario de Gobierno",
+      "c) El elaborado por el Coordinador Provincial y aprobado por el Secretario de Gobierno",
+      "d) El establecido por el Juez titular"
+    ],
+    correcta: 2,
+    explicacion: "Seguirán el protocolo elaborado por el Secretario Coordinador Provincial y aprobado por el Secretario de Gobierno."
+  },
+  {
+    pregunta: "11. ¿Qué criterios aplican los protocolos de actuación?",
+    opciones: [
+      "a) Solo los del Ministerio de Justicia",
+      "b) Criterios generales del CGPJ para homogeneizar actuaciones",
+      "c) Instrucciones de las Comunidades Autónomas",
+      "d) Criterios personales del Letrado"
+    ],
+    correcta: 1,
+    explicacion: "Aplican criterios generales del CGPJ para homogeneizar actuaciones de Servicios Comunes en todo el territorio."
+  },
+  {
+    pregunta: "12. ¿Qué deben velar los Letrados respecto a los protocolos?",
+    opciones: [
+      "a) Su actualización anual",
+      "b) Su publicación en boletines oficiales",
+      "c) Su cumplimiento e inspección de la actividad del personal",
+      "d) Su adaptación a cada caso concreto"
+    ],
+    correcta: 2,
+    explicacion: "Deben velar por el cumplimiento del protocolo e inspeccionar la actividad cotidiana del personal."
+  },
+  {
+    pregunta: "13. ¿Qué colaboración prestan con la Administración Tributaria?",
+    opciones: [
+      "a) Asesoramiento jurídico",
+      "b) Gestión de tributos que les sea encomendada",
+      "c) Recaudación de impuestos",
+      "d) Todas las anteriores"
+    ],
+    correcta: 1,
+    explicacion: "Colaboran en la gestión de los tributos que les sea encomendada en normativa específica."
+  },
+  {
+    pregunta: "14. ¿Qué finalidad NO tiene la estadística judicial?",
+    opciones: [
+      "a) Ejercicio de política legislativa",
+      "b) Modernización organizativa",
+      "c) Planificación de recursos humanos",
+      "d) Control de legalidad de las resoluciones"
+    ],
+    correcta: 3,
+    explicacion: "La estadística no tiene por finalidad el control de legalidad de las resoluciones judiciales."
+  },
+  {
+    pregunta: "15. ¿Qué órganos tienen acceso a la estadística judicial?",
+    opciones: [
+      "a) Solo el CGPJ y el Ministerio",
+      "b) Cortes Generales, Gobierno, CCAA, CGPJ y Fiscalía",
+      "c) Todos los órganos judiciales",
+      "d) Solo los juzgados y tribunales"
+    ],
+    correcta: 1,
+    explicacion: "La información está disponible para Cortes Generales, Gobierno, CCAA, CGPJ y Fiscalía General del Estado."
+  },
+  {
+    pregunta: "16. ¿Qué función tienen en el archivo judicial de gestión?",
+    opciones: [
+      "a) Solo custodia",
+      "b) Responsabilidad conforme a normativa reguladora",
+      "c) Digitalización obligatoria",
+      "d) Eliminación periódica"
+    ],
+    correcta: 1,
+    explicacion: "Son responsables del archivo judicial de gestión conforme a la normativa reguladora."
+  },
+  {
+    pregunta: "17. ¿Qué deben facilitar a quienes acrediten interés legítimo?",
+    opciones: [
+      "a) Copias autorizadas de todo el expediente",
+      "b) Información sobre estado de actuaciones no secretas",
+      "c) Acceso directo a los autos",
+      "d) Certificaciones gratuitas"
+    ],
+    correcta: 1,
+    explicacion: "Facilitan información sobre estado de actuaciones no secretas a quien acredite interés legítimo."
+  },
+  {
+    pregunta: "18. ¿Qué derecho tienen las partes sobre documentos no secretos?",
+    opciones: [
+      "a) Copias simples de escritos y documentos",
+      "b) Solo consulta en sede judicial",
+      "c) Copias compulsadas gratuitas",
+      "d) Acceso completo al expediente"
+    ],
+    correcta: 0,
+    explicacion: "Tienen derecho a copias simples de escritos y documentos no secretos que consten en autos."
+  },
+  {
+    pregunta: "19. ¿Qué NO es requisito para ingreso en el Cuerpo?",
+    opciones: [
+      "a) Nacionalidad española",
+      "b) Licenciatura en Derecho",
+      "c) No estar incurso en incompatibilidades",
+      "d) Experiencia previa en juzgados"
+    ],
+    correcta: 3,
+    explicacion: "No se exige experiencia previa en juzgados para el ingreso en el Cuerpo."
+  },
+  {
+    pregunta: "20. ¿Qué sistema de selección tiene carácter excepcional?",
+    opciones: [
+      "a) Oposición libre",
+      "b) Concurso-oposición libre",
+      "c) Promoción interna",
+      "d) Libre designación"
+    ],
+    correcta: 1,
+    explicacion: "El concurso-oposición libre tiene carácter excepcional, siendo la oposición el sistema ordinario."
+  },
+  {
+    pregunta: "21. ¿Qué porcentaje de plazas se reserva a promoción interna?",
+    opciones: [
+      "a) 15%",
+      "b) 30%",
+      "c) 50%",
+      "d) 70%"
+    ],
+    correcta: 1,
+    explicacion: "Se reserva el 30% de plazas para promoción interna de funcionarios del Cuerpo de Gestión Procesal."
+  },
+  {
+    pregunta: "22. ¿Qué antigüedad se requiere para promoción interna?",
+    opciones: [
+      "a) 1 año en el Cuerpo de Gestión",
+      "b) 2 años en el Cuerpo de Gestión",
+      "c) 5 años en cualquier cuerpo",
+      "d) 3 años en cuerpos judiciales"
+    ],
+    correcta: 1,
+    explicacion: "Se requieren al menos 2 años de servicios efectivos en el Cuerpo de Gestión Procesal."
+  },
+  {
+    pregunta: "23. ¿Qué causa pérdida de la condición de Letrado?",
+    opciones: [
+      "a) Sanción de suspensión",
+      "b) Pena de inhabilitación especial",
+      "c) Condena a pena leve",
+      "d) Incompatibilidad temporal"
+    ],
+    correcta: 1,
+    explicacion: "Causa pérdida la pena principal o accesoria de inhabilitación absoluta o especial para cargos públicos."
+  },
+  {
+    pregunta: "24. ¿Qué ocurre si un Letrado pierde la nacionalidad española?",
+    opciones: [
+      "a) Nada, sigue en el cargo",
+      "b) Debe solicitar autorización",
+      "c) Pierde la condición de Letrado",
+      "d) Queda suspendido temporalmente"
+    ],
+    correcta: 2,
+    explicacion: "La pérdida de la nacionalidad española causa pérdida de la condición de Letrado."
+  },
+  {
+    pregunta: "25. ¿Hasta qué edad pueden solicitar permanencia en servicio activo?",
+    opciones: [
+      "a) 70 años",
+      "b) 72 años",
+      "c) 75 años",
+      "d) No hay límite"
+    ],
+    correcta: 1,
+    explicacion: "Pueden solicitar permanencia hasta los 72 años (frente a jubilación forzosa a los 70)."
+  },
+  {
+    pregunta: "26. ¿Qué puestos incluye el Grupo tercero?",
+    opciones: [
+      "a) Letrados de Juzgados y Servicios Comunes no incluidos en Grupo II",
+      "b) Solo Letrados de Juzgados",
+      "c) Solo Letrados de Servicios Comunes",
+      "d) Letrados en prácticas"
+    ],
+    correcta: 0,
+    explicacion: "Incluye puestos de Unidades de Apoyo a órganos unipersonales y Servicios Comunes no incluidos en Grupo II."
+  },
+  {
+    pregunta: "27. ¿Qué derecho profesional tienen los Letrados?",
+    opciones: [
+      "a) Negociación colectiva",
+      "b) Libre asociación profesional",
+      "c) Derecho de huelga",
+      "d) Todos los anteriores"
+    ],
+    correcta: 1,
+    explicacion: "Entre sus derechos está la libre asociación profesional."
+  },
+  {
+    pregunta: "28. ¿Qué tratamiento reciben los Letrados del Grupo II?",
+    opciones: [
+      "a) Señoría",
+      "b) Señoría Ilustrísima",
+      "c) Excelentísimo Señor",
+      "d) Ilustrísimo Señor"
+    ],
+    correcta: 0,
+    explicacion: "Los Letrados no del Grupo I tienen tratamiento de Señoría."
+  },
+  {
+    pregunta: "29. ¿Qué distintivo usan los Letrados de 1ª y 2ª categoría?",
+    opciones: [
+      "a) Placa y medalla doradas",
+      "b) Placa plateada y medalla dorada",
+      "c) Solo placa dorada",
+      "d) Banda azul"
+    ],
+    correcta: 0,
+    explicacion: "Llevan placa y medalla doradas si tienen 1ª o 2ª categoría consolidadas."
+  },
+  {
+    pregunta: "30. ¿Dónde se publica el escalafón del Cuerpo?",
+    opciones: [
+      "a) Boletín Oficial del Estado",
+      "b) Boletines autonómicos",
+      "c) Diarios oficiales europeos",
+      "d) Solo en sede electrónica del Ministerio"
+    ],
+    correcta: 0,
+    explicacion: "El escalafón se publica en el BOE anualmente."
+  },
+  {
+    pregunta: "31. ¿Cuántos Secretarios de Gobierno hay en la Audiencia Nacional?",
+    opciones: [
+      "a) Uno",
+      "b) Dos",
+      "c) Uno por Sala",
+      "d) Uno por cada cinco Letrados"
+    ],
+    correcta: 0,
+    explicacion: "Hay un Secretario de Gobierno en la Audiencia Nacional."
+  },
+  {
+    pregunta: "32. ¿Qué funciones tiene el Vicesecretario de Gobierno?",
+    opciones: [
+      "a) Sustituir al Secretario en todas sus funciones",
+      "b) Ejercer solo como Secretario de la Sala de Gobierno",
+      "c) Coordinar a los Letrados de Sala",
+      "d) Gestionar recursos materiales"
+    ],
+    correcta: 1,
+    explicacion: "El Vicesecretario ejerce exclusivamente como Secretario de la Sala de Gobierno en ausencia del titular."
+  },
+  {
+    pregunta: "33. ¿Quién nombra al Vicesecretario de Gobierno?",
+    opciones: [
+      "a) El Secretario General",
+      "b) El Letrado más antiguo del Tribunal",
+      "c) El Ministerio de Justicia",
+      "d) La Sala de Gobierno"
+    ],
+    correcta: 1,
+    explicacion: "Recae en el Letrado más antiguo de los destinados en dicho órgano."
+  },
+  {
+    pregunta: "34. ¿Qué competencia tienen los Secretarios de Gobierno sobre expedientes disciplinarios?",
+    opciones: [
+      "a) Solo instruirlos",
+      "b) Incoarlos e imponer apercibimientos",
+      "c) Resolver todos los tipos",
+      "d) Delegarlos en Coordinadores"
+    ],
+    correcta: 1,
+    explicacion: "Pueden incoar expedientes e imponer la sanción de apercibimiento."
+  },
+  {
+    pregunta: "35. ¿Qué proponen los Secretarios de Gobierno sobre comisiones de servicio?",
+    opciones: [
+      "a) Todas las del territorio nacional",
+      "b) Solo las de su ámbito territorial",
+      "c) Las que afecten a Letrados de Sala",
+      "d) Las autorizadas por el CGPJ"
+    ],
+    correcta: 1,
+    explicacion: "Proponen las comisiones de servicio precisas en su ámbito territorial hasta que se provean las plazas."
+  },
+  {
+    pregunta: "36. ¿Qué informan los Secretarios de Gobierno a las Salas de Gobierno?",
+    opciones: [
+      "a) Solo asuntos solicitados por la Sala",
+      "b) Asuntos que afecten a Oficinas judiciales o Letrados",
+      "c) Solo estadísticas judiciales",
+      "d) Todas sus actuaciones"
+    ],
+    correcta: 1,
+    explicacion: "Informan de asuntos que afecten a Oficinas judiciales o Letrados y exijan actuación de la Sala."
+  },
+  {
+    pregunta: "37. ¿Qué plazo tienen para designar instructores en expedientes disciplinarios?",
+    opciones: [
+      "a) 24 horas",
+      "b) 3 días",
+      "c) 5 días",
+      "d) 10 días"
+    ],
+    correcta: 1,
+    explicacion: "Deben designar al Letrado instructor en el plazo de 3 días desde la solicitud."
+  },
+  {
+    pregunta: "38. ¿Qué aprueban los Secretarios de Gobierno respecto a protocolos?",
+    opciones: [
+      "a) Los elaborados por los Coordinadores Provinciales",
+      "b) Los propuestos por los Jueces Decanos",
+      "c) Los remitidos por el CGPJ",
+      "d) Todos los protocolos judiciales"
+    ],
+    correcta: 0,
+    explicacion: "Aprueban los protocolos elaborados por los Secretarios Coordinadores Provinciales."
+  },
+  {
+    pregunta: "39. ¿Qué requisito tiene el Secretario Coordinador Provincial?",
+    opciones: [
+      "a) 5 años en el Cuerpo",
+      "b) 10 años en el Cuerpo y 5 en 2ª categoría",
+      "c) 15 años de servicio efectivo",
+      "d) Haber sido Secretario de Gobierno"
+    ],
+    correcta: 1,
+    explicacion: "Debe llevar al menos 10 años en el Cuerpo y 5 en puestos de 2ª categoría."
+  },
+  {
+    pregunta: "40. ¿Qué competencia tienen los Coordinadores Provinciales sobre circulares?",
+    opciones: [
+      "a) Dictarlas directamente",
+      "b) Controlar ejecución de las del Secretario de Gobierno",
+      "c) Modificarlas si las consideran inconvenientes",
+      "d) Derogarlas con acuerdo de la Sala"
+    ],
+    correcta: 1,
+    explicacion: "Controlan la correcta ejecución de las circulares e instrucciones del Secretario de Gobierno."
+  },
+  {
+    pregunta: "41. ¿Qué deben comunicar inmediatamente al Secretario de Gobierno?",
+    opciones: [
+      "a) Toda incidencia en su provincia",
+      "b) Hechos relevantes para el buen funcionamiento",
+      "c) Solo faltas disciplinarias graves",
+      "d) Conflictos con autoridades judiciales"
+    ],
+    correcta: 1,
+    explicacion: "Dan cuenta inmediata de hechos relevantes para el buen funcionamiento de la Administración de Justicia."
+  },
+  {
+    pregunta: "42. ¿Qué organizan los Coordinadores Provinciales respecto al trabajo?",
+    opciones: [
+      "a) Solo el de los Letrados",
+      "b) El de Letrados y funcionarios de UPAD de órganos colegiados",
+      "c) El de todo el personal judicial",
+      "d) Solo el de Servicios Comunes"
+    ],
+    correcta: 1,
+    explicacion: "Organizan trabajo de Letrados y funcionarios de UPAD de órganos colegiados en mismo municipio."
+  },
+  {
+    pregunta: "43. ¿Qué hacen los Coordinadores con los protocolos técnicos?",
+    opciones: [
+      "a) Solo recibirlos del Secretario de Gobierno",
+      "b) Elaborarlos cuando sean necesarios",
+      "c) Remitirlos al Ministerio para aprobación",
+      "d) Uniformarlos en todo el territorio"
+    ],
+    correcta: 1,
+    explicacion: "Elaboran cuantos protocolos de carácter técnico procesal sean necesarios."
+  },
+  {
+    pregunta: "44. ¿Qué resuelven los Coordinadores sobre quejas de actuaciones de Letrados?",
+    opciones: [
+      "a) Todas las que reciban",
+      "b) Solo las fundadas",
+      "c) Dan curso legal proponiendo medidas o remitiéndolas",
+      "d) Las derivan siempre al Secretario de Gobierno"
+    ],
+    correcta: 2,
+    explicacion: "Dan curso legal a las quejas, proponiendo medidas o remitiéndolas a órganos competentes según contenido."
+  },
+  {
+    pregunta: "45. ¿Qué competencia tiene el Secretario General sobre inspección?",
+    opciones: [
+      "a) Inspecciona personalmente todos los servicios",
+      "b) Ostenta la inspección de las Secretarías de Gobierno",
+      "c) Delega siempre en los Secretarios de Gobierno",
+      "d) Solo inspecciona a petición del Ministro"
+    ],
+    correcta: 1,
+    explicacion: "Ostenta la inspección de las Secretarías de Gobierno, sin perjuicio de la que corresponda al CGPJ."
+  },
+  {
+    pregunta: "46. ¿Qué función tiene el Secretario General respecto a estudios de eficacia?",
+    opciones: [
+      "a) Encargarlos a empresas externas",
+      "b) Realizarlos en relación con servicios gestionados por Letrados",
+      "c) Validar los realizados por las CCAA",
+      "d) Solo recibir los del CGPJ"
+    ],
+    correcta: 1,
+    explicacion: "Realiza estudios de eficacia y rendimiento en lo relacionado con servicios gestionados por Letrados."
+  },
+  {
+    pregunta: "47. ¿En qué normas debe ser oído el Secretario General?",
+    opciones: [
+      "a) Solo en reglamentos de personal",
+      "b) En normas sobre custodia de bienes depositados y funciones del Cuerpo",
+      "c) En todas las del Ministerio de Justicia",
+      "d) En las que afecten a jueces y magistrados"
+    ],
+    correcta: 1,
+    explicacion: "Debe ser oído en normas sobre custodia de bienes y regulación de funciones del Cuerpo."
+  },
+  {
+    pregunta: "48. ¿Cuántos vocales tiene el Consejo del Secretariado?",
+    opciones: [
+      "a) 4 natos y 4 elegidos",
+      "b) 6 natos y 6 elegidos",
+      "c) 4 natos y 6 elegidos",
+      "d) 5 natos y 5 elegidos"
+    ],
+    correcta: 2,
+    explicacion: "Está formado por 4 vocales natos y 6 elegidos democráticamente por los Letrados."
+  },
+  {
+    pregunta: "49. ¿Qué informa el Consejo del Secretariado?",
+    opciones: [
+      "a) Solo reclamaciones sobre escalafón",
+      "b) Reclamaciones sobre escalafón y propuestas de nombramientos",
+      "c) Todas las actuaciones disciplinarias",
+      "d) Los recursos contra actos administrativos"
+    ],
+    correcta: 1,
+    explicacion: "Informa reclamaciones sobre escalafón y propuestas de nombramientos de Secretarios de Gobierno y Coordinadores."
+  },
+  {
+    pregunta: "50. ¿Qué mayoría se necesita para acuerdos en Juntas de Letrados?",
+    opciones: [
+      "a) Unanimidad",
+      "b) Mayoría absoluta de miembros (mitad más uno)",
+      "c) Dos tercios de asistentes",
+      "d) Mayoría simple de asistentes"
+    ],
+    correcta: 3,
+    explicacion: "Se adoptan acuerdos por mayoría simple de asistentes, previa constitución válida con mitad más uno de miembros."
+  }
+];
+
+        let preguntaActual = 0;
+        let respuestasCorrectas = 0;
+        let respuestasUsuario = Array(preguntas.length).fill(null);
+
+        // Mostrar la primera pregunta al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+        preguntas.forEach(p => {
+            // Guardamos la opción correcta original
+            const correctaOriginal = p.opciones[p.correcta];
+            // Mezclamos las opciones
+            p.opciones = mezclarArray(p.opciones);
+            // Actualizamos el índice de la nueva correcta
+            p.correcta = p.opciones.indexOf(correctaOriginal);
+        });
+
+            document.getElementById('total-preguntas').textContent = preguntas.length;
+            generarIndice();
+            mostrarPregunta(preguntaActual);
+            actualizarControlesNavegacion();
+        });
+        
+        //para mezclar
+            function mezclarArray(array) {
+            const copia = [...array];
+            for (let i = copia.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copia[i], copia[j]] = [copia[j], copia[i]];
+            }
+            return copia;
+            }
+
+        
+
+
+        // Función para generar el índice de preguntas
+        function generarIndice() {
+            const indice = document.getElementById('indice');
+            indice.innerHTML = '';
+            
+            preguntas.forEach((_, index) => {
+                const numero = document.createElement('div');
+                numero.className = 'numero-pregunta';
+                numero.textContent = index + 1;
+                numero.onclick = function() { irAPregunta(index); };
+                indice.appendChild(numero);
+            });
+        }
+
+        // Función para ir a una pregunta específica
+        function irAPregunta(num) {
+            preguntaActual = num;
+            mostrarPregunta(preguntaActual);
+            actualizarControlesNavegacion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Función para mostrar una pregunta
+        function mostrarPregunta(num) {
+            const form = document.getElementById('testForm');
+            form.innerHTML = '';
+            
+            const pregunta = preguntas[num];
+            
+            const divPregunta = document.createElement('div');
+            divPregunta.className = 'pregunta';
+            
+            const pTexto = document.createElement('p');
+            pTexto.textContent = pregunta.pregunta;
+            divPregunta.appendChild(pTexto);
+            
+            // Crear opciones de respuesta
+            pregunta.opciones.forEach((opcion, index) => {
+                const label = document.createElement('label');
+                
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'pregunta';
+                input.value = index;
+                input.onclick = function() { verificarRespuesta(index); };
+                
+                // Verificar si ya se respondió esta pregunta
+                if (respuestasUsuario[num] !== null) {
+                    input.disabled = true;
+                    if (index === pregunta.correcta) {
+                        label.classList.add('correcta');
+                    } else if (index === respuestasUsuario[num] && respuestasUsuario[num] !== pregunta.correcta) {
+                        label.classList.add('incorrecta');
+                    }
+                }
+                
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(opcion));
+                divPregunta.appendChild(label);
+            });
+            
+            // Mostrar explicación si ya se respondió
+            if (respuestasUsuario[num] !== null) {
+                const divExplicacion = document.createElement('div');
+                divExplicacion.className = 'explicacion';
+                divExplicacion.textContent = pregunta.explicacion;
+                divExplicacion.style.display = 'block';
+                divPregunta.appendChild(divExplicacion);
+            }
+            
+            form.appendChild(divPregunta);
+            document.getElementById('pregunta-actual').textContent = num + 1;
+            
+            // Actualizar el índice
+            actualizarIndice();
+        }
+
+        // Función para actualizar el índice
+        function actualizarIndice() {
+            const numeros = document.querySelectorAll('.numero-pregunta');
+            numeros.forEach((numero, index) => {
+                numero.classList.remove('respondida', 'respondida-incorrecta');
+                
+                if (respuestasUsuario[index] !== null) {
+                    if (respuestasUsuario[index] === preguntas[index].correcta) {
+                        numero.classList.add('respondida');
+                    } else {
+                        numero.classList.add('respondida-incorrecta');
+                    }
+                }
+            });
+        }
+
+        // Función para verificar la respuesta seleccionada
+        function verificarRespuesta(opcionSeleccionada) {
+            const pregunta = preguntas[preguntaActual];
+            respuestasUsuario[preguntaActual] = opcionSeleccionada;
+            
+            if (opcionSeleccionada === pregunta.correcta) {
+                respuestasCorrectas++;
+            } else if (respuestasUsuario[preguntaActual] !== null && pregunta.correcta === respuestasUsuario[preguntaActual]) {
+                // Si antes estaba correcta y ahora no, restamos
+                respuestasCorrectas--;
+            }
+            
+            // Actualizar la visualización de las opciones
+            mostrarPregunta(preguntaActual);
+            
+            // Mostrar resultado parcial
+            const preguntasRespondidas = respuestasUsuario.filter(r => r !== null).length;
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = `
+                <p>Respuestas correctas: ${respuestasCorrectas} de ${preguntasRespondidas}</p>
+                <p>Porcentaje de aciertos: ${preguntasRespondidas > 0 ? ((respuestasCorrectas / preguntasRespondidas) * 100).toFixed(1) : 0}%</p>
+            `;
+            resultadoDiv.style.display = 'block';
+            
+            // Actualizar controles de navegación
+            actualizarControlesNavegacion();
+        }
+
+        // Función para actualizar controles de navegación
+        function actualizarControlesNavegacion() {
+            document.getElementById('anterior-btn').style.display = preguntaActual === 0 ? 'none' : 'block';
+            document.getElementById('siguiente-btn').style.display = preguntaActual === preguntas.length - 1 ? 'none' : 'block';
+            document.getElementById('finalizar-btn').style.display = preguntaActual === preguntas.length - 1 ? 'block' : 'none';
+        }
+
+        // Función para avanzar a la siguiente pregunta
+        function siguientePregunta() {
+            if (preguntaActual < preguntas.length - 1) {
+                preguntaActual++;
+                mostrarPregunta(preguntaActual);
+                actualizarControlesNavegacion();
+            }
+        }
+
+        // Función para retroceder a la pregunta anterior
+        function anteriorPregunta() {
+            if (preguntaActual > 0) {
+                preguntaActual--;
+                mostrarPregunta(preguntaActual);
+                actualizarControlesNavegacion();
+            }
+        }
+
+        // Función para finalizar el test
+        function finalizarTest() {
+            const preguntasRespondidas = respuestasUsuario.filter(r => r !== null).length;
+            const resultadoFinal = `
+                <h3>Test completado</h3>
+                <p>Has respondido ${preguntasRespondidas} de ${preguntas.length} preguntas.</p>
+                <p>Respuestas correctas: ${respuestasCorrectas} (${preguntasRespondidas > 0 ? ((respuestasCorrectas / preguntasRespondidas) * 100).toFixed(1) : 0}%)</p>
+                <p>Respuestas incorrectas: ${preguntasRespondidas - respuestasCorrectas}</p>
+                <p>Preguntas sin responder: ${preguntas.length - preguntasRespondidas}</p>
+            `;
+            document.getElementById('resultado').innerHTML = resultadoFinal;
+            document.getElementById('reintentar-incorrectas-btn').style.display = 'block';
+        }
+        
+        function reintentarIncorrectas() {
+    const preguntasIncorrectas = preguntas
+        .map((pregunta, index) => ({ ...pregunta, indexOriginal: index }))
+        .filter((_, index) => respuestasUsuario[index] !== null && respuestasUsuario[index] !== preguntas[index].correcta);
+
+    if (preguntasIncorrectas.length === 0) {
+        alert('No has fallado ninguna pregunta.');
+        return;
+    }
+
+    preguntasIncorrectas.forEach(p => {
+        // Desordenar las opciones
+        const opcionesOriginales = [...p.opciones];
+        const correctaOriginal = p.opciones[p.correcta];
+
+        // Mezclar opciones
+        for (let i = opcionesOriginales.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [opcionesOriginales[i], opcionesOriginales[j]] = [opcionesOriginales[j], opcionesOriginales[i]];
+        }
+
+        p.opciones = opcionesOriginales;
+        p.correcta = opcionesOriginales.indexOf(correctaOriginal);
+    });
+
+    // Reiniciar variables con solo las incorrectas
+    preguntaActual = 0;
+    respuestasCorrectas = 0;
+    respuestasUsuario = Array(preguntasIncorrectas.length).fill(null);
+    preguntas.splice(0, preguntas.length, ...preguntasIncorrectas); // reemplaza el array de preguntas
+
+    // Actualizar interfaz
+    document.getElementById('reintentar-incorrectas-btn').style.display = 'none';
+    document.getElementById('resultado').style.display = 'none';
+    document.getElementById('finalizar-btn').style.display = 'none';
+
+    generarIndice();
+    mostrarPregunta(preguntaActual);
+    actualizarControlesNavegacion();
+}
+    </script>
+    <button type="button" id="reintentar-incorrectas-btn" style="display:none;" onclick="reintentarIncorrectas()">Reintentar preguntas falladas</button>
+</body>
+</html>
